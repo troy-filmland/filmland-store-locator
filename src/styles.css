@@ -424,6 +424,17 @@ a:hover {
   .store-locator-sidebar,
   .store-locator-map {
     width: 100%;
+    min-width: 100%;
+    max-width: 100%;
+  }
+
+  .store-locator-container {
+    height: auto;
+    min-height: 600px;
+  }
+
+  .store-locator-map {
+    height: 400px;
   }
 
   .mobile-view-toggle {
@@ -448,7 +459,8 @@ a:hover {
   }
 
   .sidebar-header h2 {
-    font-size: 24px;
+    font-size: 13px;
+    white-space: normal;
   }
 
   .store-card {
