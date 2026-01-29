@@ -70,13 +70,13 @@ a:hover {
 }
 
 .sidebar-header {
-  padding: 24px;
+  padding: 12px 24px;
   border-bottom: 1px solid var(--filmland-border);
 }
 
 .sidebar-header h2 {
   font-family: 'Bitter', serif;
-  font-size: 28px;
+  font-size: 16px;
   margin: 0;
   color: var(--filmland-gold);
   text-transform: uppercase;
@@ -85,7 +85,7 @@ a:hover {
 
 /* Search */
 .search-section {
-  padding: 20px 24px;
+  padding: 12px 24px;
   border-bottom: 1px solid var(--filmland-border);
 }
 
@@ -105,12 +105,12 @@ a:hover {
 
 /* Filters */
 .filters-section {
-  padding: 20px 24px;
+  padding: 12px 24px;
   border-bottom: 1px solid var(--filmland-border);
 }
 
 .filter-group {
-  margin-bottom: 16px;
+  margin-bottom: 10px;
 }
 
 .filter-group:last-child {
@@ -120,9 +120,9 @@ a:hover {
 .filter-group label {
   display: block;
   font-weight: 700;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
   color: #ffffff;
-  font-size: 14px;
+  font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -130,17 +130,17 @@ a:hover {
 /* Distance Filters */
 #distance-filters {
   display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
+  gap: 6px;
+  flex-wrap: nowrap;
 }
 
 .distance-filter-btn {
-  padding: 8px 16px;
+  padding: 6px 12px;
   border: 2px solid var(--filmland-border);
   background-color: transparent;
   color: var(--filmland-text-light);
   font-family: 'PT Sans', sans-serif;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
   cursor: pointer;
   border-radius: 4px;
@@ -187,7 +187,7 @@ a:hover {
 
 /* Results Info */
 .results-section {
-  padding: 16px 24px;
+  padding: 10px 24px;
   border-bottom: 1px solid var(--filmland-border);
   background-color: #1a1a1a;
 }

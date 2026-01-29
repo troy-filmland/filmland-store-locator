@@ -372,10 +372,13 @@
       });
     }
 
-    // Fit map to show all markers if we have filtered results
-    if (filteredStores.length > 0 && currentLocation) {
+    // Fit map to show all markers plus user location
+    if (storesToShow.length > 0) {
       const bounds = new google.maps.LatLngBounds();
-      filteredStores.forEach(store => {
+      if (currentLocation) {
+        bounds.extend(currentLocation);
+      }
+      storesToShow.forEach(store => {
         bounds.extend({ lat: store.lat, lng: store.lng });
       });
       map.fitBounds(bounds);
