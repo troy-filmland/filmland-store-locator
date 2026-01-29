@@ -191,6 +191,22 @@
           map.setCenter(currentLocation);
           map.setZoom(11);
 
+          // Reverse geocode to show user's location
+          const geocoder = new google.maps.Geocoder();
+          geocoder.geocode({ location: currentLocation }, (results, status) => {
+            if (status === 'OK' && results[0]) {
+              let locationText = results[0].formatted_address;
+              // Try to find a shorter locality result
+              const locality = results.find(r => r.types.includes('locality'));
+              if (locality) locationText = locality.formatted_address;
+              const locationLabel = document.getElementById('current-location-label');
+              if (locationLabel) {
+                locationLabel.textContent = `Showing stores near ${locationText}`;
+                locationLabel.style.display = 'block';
+              }
+            }
+          });
+
           filterAndDisplayStores();
         },
         () => {

@@ -91,6 +91,12 @@ a:hover {
   border-bottom: 1px solid var(--filmland-border);
 }
 
+#current-location-label {
+  font-size: 13px;
+  color: var(--filmland-gold);
+  margin-top: 8px;
+}
+
 #search-input {
   width: 100%;
 }
