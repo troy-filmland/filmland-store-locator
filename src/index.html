@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Filmland Spirits - Store Locator</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* Full page styling for local dev */
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .page-header {
+      padding: 24px;
+      background-color: #0d0d0d;
+      border-bottom: 2px solid var(--filmland-gold);
+      text-align: center;
+    }
+
+    .page-header h1 {
+      font-size: 36px;
+      color: var(--filmland-gold);
+      margin: 0;
+    }
+
+    .store-locator-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+  </style>
+</head>
+<body>
+  <header class="page-header">
+    <h1>Filmland Spirits Store Locator</h1>
+  </header>
+
+  <div class="store-locator-container">
+    <!-- Mobile View Toggle -->
+    <div class="mobile-view-toggle">
+      <div class="mobile-toggle-btns">
+        <button class="mobile-toggle-btn active" id="mobile-list-btn">List</button>
+        <button class="mobile-toggle-btn" id="mobile-map-btn">Map</button>
+      </div>
+    </div>
+
+    <div class="store-locator-wrapper">
+      <!-- Sidebar -->
+      <aside class="store-locator-sidebar mobile-active">
+        <div class="sidebar-header">
+          <h2>Find a Store</h2>
+          <p>Locate Filmland Spirits near you</p>
+        </div>
+
+        <div class="search-section">
+          <div id="search-input"></div>
+        </div>
+
+        <div class="filters-section">
+          <div class="filter-group">
+            <label>Distance</label>
+            <div id="distance-filters"></div>
+          </div>
+
+          <div class="filter-group" id="type-filter-container">
+            <label>Store Type</label>
+            <select id="type-filter">
+              <option value="all">All Types</option>
+            </select>
+          </div>
+
+          <div class="filter-group" id="product-filter-container">
+            <label>Product</label>
+            <select id="product-filter">
+              <option value="all">All Products</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="results-section">
+          <div id="results-info">Loading stores...</div>
+        </div>
+
+        <div class="store-list-section">
+          <div id="store-list"></div>
+        </div>
+      </aside>
+
+      <!-- Map -->
+      <div class="store-locator-map">
+        <div id="map"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Google Maps API -->
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDsjU4EikSI0d6YWlc0wfL7DPzqYiYpxuM&libraries=places&v=weekly" defer></script>
+
+  <!-- MarkerClusterer -->
+  <script src="https://unpkg.com/@googlemaps/markerclusterer@2.5.3/dist/index.min.js" defer></script>
+
+  <!-- App Script -->
+  <script src="app.js" defer></script>
+</body>
+</html>

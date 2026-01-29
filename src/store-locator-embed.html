@@ -1,0 +1,66 @@
+<!-- Filmland Store Locator Embed Code -->
+<!-- Paste this code into your Webflow custom code embed -->
+
+<link rel="stylesheet" href="https://troy-filmland.github.io/filmland-store-locator/src/styles.css">
+
+<div class="store-locator-container">
+  <!-- Mobile View Toggle -->
+  <div class="mobile-view-toggle">
+    <div class="mobile-toggle-btns">
+      <button class="mobile-toggle-btn active" id="mobile-list-btn">List</button>
+      <button class="mobile-toggle-btn" id="mobile-map-btn">Map</button>
+    </div>
+  </div>
+
+  <div class="store-locator-wrapper">
+    <!-- Sidebar -->
+    <aside class="store-locator-sidebar mobile-active">
+      <div class="sidebar-header">
+        <h2>Find a Store</h2>
+        <p>Locate Filmland Spirits near you</p>
+      </div>
+
+      <div class="search-section">
+        <div id="search-input"></div>
+      </div>
+
+      <div class="filters-section">
+        <div class="filter-group">
+          <label>Distance</label>
+          <div id="distance-filters"></div>
+        </div>
+
+        <div class="filter-group" id="type-filter-container">
+          <label>Store Type</label>
+          <select id="type-filter">
+            <option value="all">All Types</option>
+          </select>
+        </div>
+
+        <div class="filter-group" id="product-filter-container">
+          <label>Product</label>
+          <select id="product-filter">
+            <option value="all">All Products</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="results-section">
+        <div id="results-info">Loading stores...</div>
+      </div>
+
+      <div class="store-list-section">
+        <div id="store-list"></div>
+      </div>
+    </aside>
+
+    <!-- Map -->
+    <div class="store-locator-map">
+      <div id="map"></div>
+    </div>
+  </div>
+</div>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDsjU4EikSI0d6YWlc0wfL7DPzqYiYpxuM&libraries=places&v=weekly" defer></script>
+<script src="https://unpkg.com/@googlemaps/markerclusterer@2.5.3/dist/index.min.js" defer></script>
+<script src="https://troy-filmland.github.io/filmland-store-locator/src/app.js" defer></script>

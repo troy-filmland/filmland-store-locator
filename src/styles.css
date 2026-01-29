@@ -1,0 +1,466 @@
+/**
+ * Filmland Store Locator Styles
+ * Brand colors: Dark (#1a1a1a), Gold (#c8a951)
+ * Fonts: Bitter (headings), PT Sans (body)
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Bitter:wght@400;700&family=PT+Sans:wght@400;700&display=swap');
+
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  --filmland-dark: #1a1a1a;
+  --filmland-gold: #c8a951;
+  --filmland-light-gray: #e5e5e5;
+  --filmland-medium-gray: #666666;
+  --filmland-text-light: #cccccc;
+  --filmland-border: #333333;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'PT Sans', sans-serif;
+  color: var(--filmland-text-light);
+  background-color: var(--filmland-dark);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Bitter', serif;
+  margin: 0;
+  color: #ffffff;
+}
+
+a {
+  color: var(--filmland-gold);
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+
+a:hover {
+  opacity: 0.8;
+}
+
+/* Main Container */
+.store-locator-container {
+  width: 100%;
+  min-height: 600px;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--filmland-dark);
+}
+
+.store-locator-wrapper {
+  display: flex;
+  flex: 1;
+  min-height: 600px;
+}
+
+/* Sidebar */
+.store-locator-sidebar {
+  width: 35%;
+  display: flex;
+  flex-direction: column;
+  background-color: #222222;
+  border-right: 1px solid var(--filmland-border);
+  overflow: hidden;
+}
+
+.sidebar-header {
+  padding: 24px;
+  border-bottom: 1px solid var(--filmland-border);
+}
+
+.sidebar-header h2 {
+  font-size: 28px;
+  margin-bottom: 8px;
+  color: var(--filmland-gold);
+}
+
+.sidebar-header p {
+  margin: 0;
+  color: var(--filmland-text-light);
+  font-size: 14px;
+}
+
+/* Search */
+.search-section {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--filmland-border);
+}
+
+#search-input {
+  width: 100%;
+}
+
+#search-input gmpx-place-autocomplete-element {
+  width: 100%;
+}
+
+/* Filters */
+.filters-section {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--filmland-border);
+}
+
+.filter-group {
+  margin-bottom: 16px;
+}
+
+.filter-group:last-child {
+  margin-bottom: 0;
+}
+
+.filter-group label {
+  display: block;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: #ffffff;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Distance Filters */
+#distance-filters {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.distance-filter-btn {
+  padding: 8px 16px;
+  border: 2px solid var(--filmland-border);
+  background-color: transparent;
+  color: var(--filmland-text-light);
+  font-family: 'PT Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.distance-filter-btn:hover {
+  border-color: var(--filmland-gold);
+  color: var(--filmland-gold);
+}
+
+.distance-filter-btn.active {
+  background-color: var(--filmland-gold);
+  border-color: var(--filmland-gold);
+  color: var(--filmland-dark);
+}
+
+/* Type and Product Filters */
+#type-filter,
+#product-filter {
+  width: 100%;
+  padding: 10px 12px;
+  border: 2px solid var(--filmland-border);
+  background-color: var(--filmland-dark);
+  color: var(--filmland-text-light);
+  font-family: 'PT Sans', sans-serif;
+  font-size: 14px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+#type-filter:focus,
+#product-filter:focus {
+  outline: none;
+  border-color: var(--filmland-gold);
+}
+
+#type-filter option,
+#product-filter option {
+  background-color: var(--filmland-dark);
+  color: var(--filmland-text-light);
+}
+
+/* Results Info */
+.results-section {
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--filmland-border);
+  background-color: #1a1a1a;
+}
+
+#results-info {
+  font-size: 14px;
+  color: var(--filmland-text-light);
+  font-weight: 700;
+}
+
+.no-results {
+  color: var(--filmland-gold);
+  font-weight: 700;
+  text-align: center;
+  padding: 16px;
+}
+
+/* Store List */
+.store-list-section {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 24px;
+}
+
+#store-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Store Card */
+.store-card {
+  padding: 20px;
+  border: 2px solid var(--filmland-border);
+  background-color: #1a1a1a;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.store-card:hover {
+  border-color: var(--filmland-gold);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(200, 169, 81, 0.1);
+}
+
+.store-card.active {
+  border-color: var(--filmland-gold);
+  background-color: #252525;
+  box-shadow: 0 4px 12px rgba(200, 169, 81, 0.2);
+}
+
+.store-name {
+  font-size: 20px;
+  margin-bottom: 8px;
+  color: #ffffff;
+}
+
+.store-address {
+  font-size: 14px;
+  color: var(--filmland-text-light);
+  margin: 0 0 8px 0;
+  line-height: 1.5;
+}
+
+.store-phone {
+  font-size: 14px;
+  margin: 0 0 8px 0;
+}
+
+.store-phone a {
+  color: var(--filmland-gold);
+}
+
+.store-type-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  background-color: var(--filmland-gold);
+  color: var(--filmland-dark);
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.store-products {
+  font-size: 13px;
+  color: var(--filmland-text-light);
+  margin: 8px 0;
+  line-height: 1.5;
+}
+
+.store-products strong {
+  color: #ffffff;
+}
+
+.store-distance {
+  font-size: 13px;
+  color: var(--filmland-gold);
+  font-weight: 700;
+  margin: 8px 0;
+}
+
+.store-directions {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 8px 16px;
+  background-color: var(--filmland-gold);
+  color: var(--filmland-dark);
+  font-weight: 700;
+  font-size: 14px;
+  border-radius: 4px;
+  transition: all 0.2s;
+  text-decoration: none;
+}
+
+.store-directions:hover {
+  opacity: 1;
+  background-color: #d4b661;
+  transform: translateY(-1px);
+}
+
+/* Map */
+.store-locator-map {
+  width: 65%;
+  position: relative;
+}
+
+#map {
+  width: 100%;
+  height: 100%;
+  min-height: 600px;
+}
+
+/* Info Window */
+.info-window {
+  padding: 8px;
+  max-width: 250px;
+}
+
+.info-window h3 {
+  font-size: 16px;
+  margin-bottom: 8px;
+  color: var(--filmland-dark);
+}
+
+.info-address {
+  font-size: 13px;
+  margin: 0 0 8px 0;
+  color: #333333;
+  line-height: 1.4;
+}
+
+.info-phone {
+  font-size: 13px;
+  margin: 0 0 8px 0;
+}
+
+.info-phone a {
+  color: #0066cc;
+}
+
+.info-directions a {
+  color: #0066cc;
+  font-weight: 700;
+  font-size: 13px;
+}
+
+/* Mobile Toggle */
+.mobile-view-toggle {
+  display: none;
+  padding: 16px 24px;
+  background-color: var(--filmland-dark);
+  border-bottom: 1px solid var(--filmland-border);
+}
+
+.mobile-toggle-btns {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+
+.mobile-toggle-btn {
+  flex: 1;
+  padding: 12px 16px;
+  border: 2px solid var(--filmland-border);
+  background-color: transparent;
+  color: var(--filmland-text-light);
+  font-family: 'PT Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.mobile-toggle-btn:hover {
+  border-color: var(--filmland-gold);
+  color: var(--filmland-gold);
+}
+
+.mobile-toggle-btn.active {
+  background-color: var(--filmland-gold);
+  border-color: var(--filmland-gold);
+  color: var(--filmland-dark);
+}
+
+/* Error Message */
+.error-message {
+  padding: 16px 24px;
+  background-color: #cc3333;
+  color: #ffffff;
+  font-weight: 700;
+  text-align: center;
+}
+
+/* Mobile Styles */
+@media (max-width: 768px) {
+  .store-locator-wrapper {
+    flex-direction: column;
+  }
+
+  .store-locator-sidebar,
+  .store-locator-map {
+    width: 100%;
+  }
+
+  .mobile-view-toggle {
+    display: block;
+  }
+
+  /* Hide inactive view on mobile */
+  .store-locator-sidebar {
+    display: none;
+  }
+
+  .store-locator-sidebar.mobile-active {
+    display: flex;
+  }
+
+  .store-locator-map {
+    display: none;
+  }
+
+  .store-locator-map.mobile-active {
+    display: block;
+  }
+
+  .sidebar-header h2 {
+    font-size: 24px;
+  }
+
+  .store-card {
+    padding: 16px;
+  }
+
+  .store-name {
+    font-size: 18px;
+  }
+}
+
+/* Scrollbar Styling */
+.store-list-section::-webkit-scrollbar {
+  width: 8px;
+}
+
+.store-list-section::-webkit-scrollbar-track {
+  background: #1a1a1a;
+}
+
+.store-list-section::-webkit-scrollbar-thumb {
+  background: var(--filmland-gold);
+  border-radius: 4px;
+}
+
+.store-list-section::-webkit-scrollbar-thumb:hover {
+  background: #d4b661;
+}

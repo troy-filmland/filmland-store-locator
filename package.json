@@ -1,0 +1,13 @@
+{
+  "name": "filmland-store-locator",
+  "version": "1.0.0",
+  "description": "Store locator for Filmland Spirits",
+  "scripts": {
+    "fetch": "node scripts/fetch-sheet.js",
+    "pivot": "node scripts/pivot-raw-data.js"
+  },
+  "dependencies": {
+    "csv-parse": "^5.5.3"
+  },
+  "type": "module"
+}

@@ -137,3 +137,12 @@ dist
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# Project plans and sensitive docs
+plan/
+plans/
+*.plan.md
+.claude/
+
+# macOS
+.DS_Store
