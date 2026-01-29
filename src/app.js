@@ -188,9 +188,6 @@
             lng: position.coords.longitude
           };
 
-          map.setCenter(currentLocation);
-          map.setZoom(11);
-
           // Reverse geocode to show user's location
           const geocoder = new google.maps.Geocoder();
           geocoder.geocode({ location: currentLocation }, (results, status) => {
@@ -362,17 +359,6 @@
       markers.push(marker);
     }
 
-    // Setup marker clustering
-    if (window.markerClusterer && window.markerClusterer.MarkerClusterer) {
-      if (markerClusterer) {
-        markerClusterer.clearMarkers();
-      }
-      markerClusterer = new markerClusterer.MarkerClusterer({
-        map,
-        markers
-      });
-    }
-
     // Fit map to show all markers plus user location
     if (storesToShow.length > 0) {
       const bounds = new google.maps.LatLngBounds();
@@ -389,6 +375,21 @@
         if (map.getZoom() > 15) {
           map.setZoom(15);
         }
+      });
+    } else if (currentLocation) {
+      // No stores found — keep centered on user location
+      map.setCenter(currentLocation);
+      map.setZoom(11);
+    }
+
+    // Setup marker clustering AFTER fitBounds
+    if (window.markerClusterer && window.markerClusterer.MarkerClusterer) {
+      if (markerClusterer) {
+        markerClusterer.clearMarkers();
+      }
+      markerClusterer = new markerClusterer.MarkerClusterer({
+        map,
+        markers
       });
     }
   }
