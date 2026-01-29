@@ -195,10 +195,12 @@
           const geocoder = new google.maps.Geocoder();
           geocoder.geocode({ location: currentLocation }, (results, status) => {
             if (status === 'OK' && results[0]) {
-              let locationText = results[0].formatted_address;
-              // Try to find a shorter locality result
+              // Prefer neighborhood/sublocality, then postal code, then first result
+              const neighborhood = results.find(r => r.types.includes('neighborhood') || r.types.includes('sublocality'));
+              const postalCode = results.find(r => r.types.includes('postal_code'));
               const locality = results.find(r => r.types.includes('locality'));
-              if (locality) locationText = locality.formatted_address;
+              const best = neighborhood || postalCode || locality || results[0];
+              let locationText = best.formatted_address;
               const locationLabel = document.getElementById('current-location-label');
               if (locationLabel) {
                 locationLabel.textContent = `Showing stores near ${locationText}`;
