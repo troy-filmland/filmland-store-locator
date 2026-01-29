@@ -241,8 +241,8 @@
       );
     }
 
-    await updateMarkers();
     updateStoreList();
+    await updateMarkers();
 
     // Update placeholder
     const resultsInfo = document.getElementById('results-info');
@@ -256,7 +256,7 @@
    */
   async function filterAndDisplayStores() {
     if (!currentLocation) {
-      showAllStores();
+      await showAllStores();
       return;
     }
 
@@ -284,7 +284,6 @@
       );
     }
 
-    await updateMarkers();
     updateStoreList();
 
     // Update results info
@@ -296,6 +295,8 @@
         resultsInfo.textContent = `${filteredStores.length} store${filteredStores.length !== 1 ? 's' : ''} within ${currentRadius} miles`;
       }
     }
+
+    await updateMarkers();
   }
 
   /**
