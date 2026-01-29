@@ -18,9 +18,21 @@
 function onOpen() {
   const ui = SpreadsheetApp.getUi();
   ui.createMenu('Filmland')
-    .addItem('Geocode New Stores', 'geocodeNewStores')
-    .addItem('Push Update Now', 'triggerGitHubSync')
+    .addItem('Update Website', 'updateWebsite')
     .addToUi();
+}
+
+/**
+ * One-button update: geocodes new stores, then pushes to GitHub
+ */
+function updateWebsite() {
+  const ui = SpreadsheetApp.getUi();
+
+  // Step 1: Geocode any new stores
+  const geocodeResult = geocodeNewStores();
+
+  // Step 2: Push to GitHub
+  triggerGitHubSync(geocodeResult);
 }
 
 /**
@@ -102,18 +114,13 @@ function geocodeNewStores() {
     }
   }
 
-  SpreadsheetApp.getUi().alert(
-    `Geocoding Complete\n\n` +
-    `Geocoded: ${geocodedCount} stores\n` +
-    `Errors: ${errorCount} stores\n\n` +
-    `Check the logs (Extensions > Apps Script > Executions) for details.`
-  );
+  return { geocodedCount, errorCount };
 }
 
 /**
  * Triggers GitHub Action to sync store data
  */
-function triggerGitHubSync() {
+function triggerGitHubSync(geocodeResult) {
   const scriptProperties = PropertiesService.getScriptProperties();
   const githubPat = scriptProperties.getProperty('GITHUB_PAT');
 
@@ -148,13 +155,16 @@ function triggerGitHubSync() {
     const statusCode = response.getResponseCode();
 
     if (statusCode === 204) {
-      SpreadsheetApp.getUi().alert(
-        'Success!\n\n' +
-        'GitHub Action triggered successfully.\n' +
-        'Store data will be updated within a few minutes.\n\n' +
-        'View progress at:\n' +
-        'https://github.com/troy-filmland/filmland-store-locator/actions'
-      );
+      let msg = 'Website update started!\n\n';
+      if (geocodeResult) {
+        msg += `Geocoded: ${geocodeResult.geocodedCount} new stores\n`;
+        if (geocodeResult.errorCount > 0) {
+          msg += `Geocode errors: ${geocodeResult.errorCount}\n`;
+        }
+        msg += '\n';
+      }
+      msg += 'Store data will be live within a few minutes.';
+      SpreadsheetApp.getUi().alert(msg);
     } else {
       Logger.log(`Response: ${response.getContentText()}`);
       SpreadsheetApp.getUi().alert(
