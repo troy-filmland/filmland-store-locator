@@ -438,24 +438,21 @@ a:hover {
   }
 
   .mobile-view-toggle {
-    display: block;
-  }
-
-  /* Hide inactive view on mobile */
-  .store-locator-sidebar {
     display: none;
   }
 
-  .store-locator-sidebar.mobile-active {
+  /* Mobile: map on top, list below, both visible */
+  .store-locator-sidebar {
     display: flex;
+    order: 2;
+    max-height: 500px;
+    overflow: hidden;
   }
 
   .store-locator-map {
-    display: none;
-  }
-
-  .store-locator-map.mobile-active {
     display: block;
+    order: 1;
+    min-height: 400px;
   }
 
   .sidebar-header h2 {

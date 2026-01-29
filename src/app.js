@@ -684,11 +684,18 @@
       sidebar?.classList.remove('mobile-active');
       mapContainer?.classList.add('mobile-active');
 
-      // Trigger map resize and re-center
+      // Trigger map resize and fit to stores
       if (map) {
         google.maps.event.trigger(map, 'resize');
-        if (currentLocation) {
-          map.panTo(currentLocation);
+        const storesToShow = (filteredStores.length > 0 || currentLocation) ? filteredStores : stores;
+        if (storesToShow.length > 0) {
+          const bounds = new google.maps.LatLngBounds();
+          if (currentLocation) bounds.extend(currentLocation);
+          storesToShow.forEach(store => bounds.extend({ lat: store.lat, lng: store.lng }));
+          map.fitBounds(bounds);
+        } else if (currentLocation) {
+          map.setCenter(currentLocation);
+          map.setZoom(11);
         }
       }
     } else {
