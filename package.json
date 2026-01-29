@@ -7,7 +7,8 @@
     "pivot": "node scripts/pivot-raw-data.js"
   },
   "dependencies": {
-    "csv-parse": "^5.5.3"
+    "csv-parse": "^5.5.3",
+    "xlsx": "^0.18.5"
   },
   "type": "module"
 }

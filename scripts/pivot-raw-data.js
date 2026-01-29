@@ -1,48 +1,81 @@
-import { parse } from 'csv-parse/sync';
-import { readFileSync, writeFileSync } from 'fs';
+import XLSX from 'xlsx';
+import { writeFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const INPUT_FILE = '/Users/troy/Filmland Website/Data/Acct Info 6 Month RAW DATA.csv';
-const OUTPUT_FILE = join(__dirname, '../data/initial-import.csv');
+const DATA_DIR = join(__dirname, '../data');
+const OUTPUT_FILE = join(DATA_DIR, 'initial-import.csv');
+
+const OFF_PREM_FILE = join(DATA_DIR, 'OFF Prem Acct Info 6 month RAW DATA.xlsx');
+const ON_PREM_FILE = join(DATA_DIR, 'On Prem Acct Info 6 month RAW DATA.xlsx');
+
+// Product abbreviation → full name (order matters for CSV columns)
+const PRODUCT_MAP = {
+  MM:   'Moonlight Mayhem!',
+  MMEC: 'Moonlight Mayhem! Extended Cut',
+  RR:   'Ryes of the Robots',
+  RREC: 'Ryes of the Robot Extended Cut',
+  QUAD: 'Quadraforce Blended Bourbon',
+  MMWP: 'Moonlight Mayhem! 2 the White Port Wolf',
+};
+
+const PRODUCT_ABBREVS = Object.keys(PRODUCT_MAP);
 
 /**
- * Clean product name by removing pack size suffix
- * Examples: "Moonlight Mayhem 6/750 ml" -> "Moonlight Mayhem"
- *           "Ryes of the Robots 12/750 ml" -> "Ryes of the Robots"
+ * Normalize a raw Item Name to its abbreviation key, or null if unrecognised / excluded.
  */
-function cleanProductName(productName) {
-  if (!productName) return '';
+function matchProduct(rawName) {
+  if (!rawName) return null;
 
-  // Remove pack size pattern like "6/750 ml", "12/750 ml", etc.
-  let cleaned = productName
-    .replace(/\s+\d+\/\d+\s*ml$/i, '')
-    .replace(/\s+\d+\/\d+$/i, '')
-    .trim();
+  // Strip pack-size suffix like "6/750 ml"
+  let name = rawName.replace(/\s+\d+\/\d+\s*ml$/i, '').replace(/\s+\d+\/\d+$/i, '').trim();
 
-  // Normalize to title case to deduplicate variants like
-  // "Ryes Of The Robot Extended Cut" vs "Ryes of the Robot Extended Cut"
-  cleaned = cleaned.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
-  // Lowercase common small words (except at start)
-  cleaned = cleaned.replace(/\s(Of|The|At|And|In|On|To|A|An)\b/g, m => m.toLowerCase());
+  // Normalise to lower for comparison
+  const lower = name.toLowerCase();
 
-  return cleaned;
+  // Exclude sold-out product
+  if (lower.includes('town at the end of tomorrow')) return null;
+
+  // Match against known products.
+  // Raw data may lack "!", may omit words like "the", or have extra suffixes like "Single Barrel".
+  // Strategy: check if the normalised raw name starts with the normalised full name,
+  // or use special-case matching for tricky names.
+  // We also need to handle "Moonlight Mayhem 2 White Port Wolf" → MMWP (raw lacks "the")
+
+  // Normalise: lowercase, strip "!", collapse whitespace
+  const norm = (s) => s.toLowerCase().replace(/!/g, '').replace(/\s+/g, ' ').trim();
+
+  const normRaw = norm(lower);
+
+  // Special case first: raw "moonlight mayhem 2 white port wolf" (missing "the")
+  if (normRaw.includes('mayhem') && normRaw.includes('2') && normRaw.includes('white port wolf')) {
+    return 'MMWP';
+  }
+
+  // Try exact match first, then startsWith
+  // Process in reverse key order (longest full names first) to avoid partial matches
+  const entries = Object.entries(PRODUCT_MAP).sort((a, b) => b[1].length - a[1].length);
+
+  for (const [abbrev, fullName] of entries) {
+    const normFull = norm(fullName);
+    if (normRaw === normFull || normRaw.startsWith(normFull)) return abbrev;
+  }
+
+  return null;
 }
 
 /**
  * Clean phone number: extract digits, format as (XXX) XXX-XXXX
- * Handles: "0", Excel-padded "20520030780000000000", raw digits "12704951421"
  */
 function cleanPhone(phone) {
-  if (!phone || phone === '0' || phone === '1') return '';
+  if (!phone || phone === '0' || phone === '1' || phone === 0 || phone === 1) return '';
 
   let digits = String(phone).replace(/\D/g, '');
 
   // Excel pads some 10-digit numbers with trailing zeros to 19-20 digits
-  // Strip trailing zeros if the result is longer than 11 digits
   if (digits.length > 11) {
     digits = digits.replace(/0+$/, '');
   }
@@ -52,146 +85,162 @@ function cleanPhone(phone) {
     digits = digits.slice(1);
   }
 
-  // Must be exactly 10 digits to be a valid US phone
   if (digits.length !== 10) return '';
 
   return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
 }
 
 /**
- * Create a unique key for a store based on address
+ * Create a dedup key from address fields
  */
 function createStoreKey(address, city, state, zip) {
   return `${address}|${city}|${state}|${zip}`.toLowerCase().trim();
 }
 
 /**
- * Pivot raw data and aggregate by store
+ * Read an xlsx file and return rows as objects.
+ * Header at row index 3, data starts at row index 6.
+ */
+function readXlsx(filePath) {
+  const workbook = XLSX.readFile(filePath);
+  const sheetName = workbook.SheetNames[0];
+  const sheet = workbook.Sheets[sheetName];
+
+  // Convert to array of arrays (raw)
+  const raw = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
+
+  // Header row is at index 3
+  const headers = raw[3].map(h => String(h).trim());
+
+  // Data rows start at index 6
+  const rows = [];
+  for (let i = 6; i < raw.length; i++) {
+    const row = raw[i];
+    if (!row || row.length === 0) continue;
+
+    const obj = {};
+    headers.forEach((h, idx) => {
+      obj[h] = row[idx] !== undefined ? row[idx] : '';
+    });
+    rows.push(obj);
+  }
+
+  return rows;
+}
+
+/**
+ * Escape a CSV field
+ */
+function escapeCsvField(field) {
+  const s = String(field);
+  if (s.includes(',') || s.includes('"') || s.includes('\n')) {
+    return `"${s.replace(/"/g, '""')}"`;
+  }
+  return s;
+}
+
+/**
+ * Main pivot logic
  */
 function pivotRawData() {
   try {
-    console.log('Reading raw data file...');
-    const csvContent = readFileSync(INPUT_FILE, 'utf-8');
+    console.log('Reading xlsx files...');
 
-    console.log('Parsing CSV...');
-    const records = parse(csvContent, {
-      columns: true,
-      skip_empty_lines: true,
-      trim: true
-    });
+    const offPremRows = readXlsx(OFF_PREM_FILE);
+    console.log(`Off-Premise: ${offPremRows.length} raw rows`);
 
-    console.log(`Parsed ${records.length} rows`);
+    const onPremRows = readXlsx(ON_PREM_FILE);
+    console.log(`On-Premise: ${onPremRows.length} raw rows`);
 
-    // Map to store unique stores
+    // Combine with type tag
+    const allRows = [
+      ...offPremRows.map(r => ({ ...r, _type: 'Off-Premise' })),
+      ...onPremRows.map(r => ({ ...r, _type: 'On-Premise' })),
+    ];
+
     const storesMap = new Map();
 
-    // Process each row
-    records.forEach((row, index) => {
-      // Extract address fields (column names from CSV)
-      const address = row.Address || '';
-      const city = row.City || '';
-      const state = row.State || '';
-      const zip = row['Zip Code'] || '';
+    for (const row of allRows) {
+      const address = String(row['Address'] || '').trim();
+      const city = String(row['City'] || '').trim();
+      const state = String(row['State'] || row['Dist. STATE'] || '').trim();
+      const zip = String(row['Zip Code'] || '').trim();
+      const storeName = String(row['Retail Accounts'] || '').trim();
+      const itemName = String(row['Item Names'] || '').trim();
 
-      // Skip summary/total rows and rows with missing address info
-      if (!address || !city || !state || address === 'Total' || city === 'Total') {
-        console.log(`Row ${index + 1}: Skipping - missing address fields`);
-        return;
-      }
+      // Skip total/summary rows
+      if (!address || !city || address === 'Total' || city === 'Total' || storeName === 'Total') continue;
 
-      // Create unique key
       const storeKey = createStoreKey(address, city, state, zip);
 
-      // Get or create store entry
       if (!storesMap.has(storeKey)) {
-        // Extract store name from "Retail Accounts" column
-        const storeName = row['Retail Accounts'] || '';
-
-        const phone = cleanPhone(row.Phone);
-
         storesMap.set(storeKey, {
-          store_name: storeName.trim(),
-          address: address.trim(),
-          city: city.trim(),
-          state: state.trim(),
-          zip: zip.trim(),
-          phone: phone,
-          type: '', // Empty - to be filled manually
-          lat: '', // Empty - will be geocoded later
-          lng: '', // Empty - will be geocoded later
-          productsSet: new Set()
+          store_name: storeName,
+          address,
+          city,
+          state,
+          zip,
+          phone: cleanPhone(row['Phone']),
+          type: row._type,
+          lat: '',
+          lng: '',
+          products: new Set(),
         });
       }
 
-      // Add product to store's product set
       const store = storesMap.get(storeKey);
 
-      // Capture phone if store doesn't have one yet
+      // Capture phone if missing
       if (!store.phone) {
-        const rowPhone = cleanPhone(row.Phone);
-        if (rowPhone) store.phone = rowPhone;
+        const p = cleanPhone(row['Phone']);
+        if (p) store.phone = p;
       }
 
-      // Product name is in "Item Names" column
-      const productName = row['Item Names'] || '';
-
-      if (productName && productName !== 'Total') {
-        const cleanedProduct = cleanProductName(productName);
-        if (cleanedProduct) {
-          store.productsSet.add(cleanedProduct);
-        }
+      // Match product
+      const abbrev = matchProduct(itemName);
+      if (abbrev) {
+        store.products.add(abbrev);
       }
-    });
+    }
 
     console.log(`Found ${storesMap.size} unique stores`);
 
-    // Convert to CSV format
-    const outputRows = [];
+    // Build CSV
+    const header = ['store_name', 'address', 'city', 'state', 'zip', 'phone', 'type', 'lat', 'lng', ...PRODUCT_ABBREVS].join(',');
+    const lines = [header];
 
-    // Header row
-    outputRows.push('store_name,address,city,state,zip,phone,type,lat,lng,products');
-
-    // Data rows
     for (const store of storesMap.values()) {
-      // Convert products set to comma-separated string
-      const products = Array.from(store.productsSet).sort().join(', ');
-
-      // Escape fields that contain commas or quotes
-      const escapeCsvField = (field) => {
-        if (field.includes(',') || field.includes('"') || field.includes('\n')) {
-          return `"${field.replace(/"/g, '""')}"`;
-        }
-        return field;
-      };
-
-      outputRows.push([
+      const productCols = PRODUCT_ABBREVS.map(a => store.products.has(a) ? 'TRUE' : 'FALSE');
+      lines.push([
         escapeCsvField(store.store_name),
         escapeCsvField(store.address),
         escapeCsvField(store.city),
         escapeCsvField(store.state),
         escapeCsvField(store.zip),
         escapeCsvField(store.phone),
-        '', // type
-        '', // lat
-        '', // lng
-        escapeCsvField(products)
+        escapeCsvField(store.type),
+        store.lat,
+        store.lng,
+        ...productCols,
       ].join(','));
     }
 
-    // Write output file
-    const outputContent = outputRows.join('\n');
-    writeFileSync(OUTPUT_FILE, outputContent, 'utf-8');
-
+    writeFileSync(OUTPUT_FILE, lines.join('\n'), 'utf-8');
     console.log(`\nSuccess! Created ${OUTPUT_FILE}`);
     console.log(`Total stores: ${storesMap.size}`);
 
-    // Show sample of products found
-    const allProducts = new Set();
-    storesMap.forEach(store => {
-      store.productsSet.forEach(product => allProducts.add(product));
-    });
-    console.log(`\nUnique products found: ${allProducts.size}`);
-    console.log('Products:', Array.from(allProducts).sort().join(', '));
+    // Show product summary
+    const productCounts = {};
+    PRODUCT_ABBREVS.forEach(a => { productCounts[a] = 0; });
+    for (const store of storesMap.values()) {
+      for (const a of store.products) {
+        productCounts[a]++;
+      }
+    }
+    console.log('\nProduct counts:');
+    for (const [a, count] of Object.entries(productCounts)) {
+      console.log(`  ${a} (${PRODUCT_MAP[a]}): ${count} stores`);
+    }
 
   } catch (error) {
     console.error('Error processing data:', error);
@@ -199,5 +248,4 @@ function pivotRawData() {
   }
 }
 
-// Run the pivot
 pivotRawData();

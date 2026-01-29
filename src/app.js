@@ -334,18 +334,45 @@
     const storesToShow = (filteredStores.length > 0 || currentLocation) ? filteredStores : stores;
 
     for (const store of storesToShow) {
-      // Create custom pin
-      const pinElement = new PinElement({
-        background: CONFIG.brandColor,
-        borderColor: '#ffffff',
-        glyphColor: '#1a1a1a',
-        scale: 1.0
-      });
+      let markerContent;
+      const storeType = (store.type || '').toLowerCase();
+
+      if (storeType === 'off-premise') {
+        // Building/storefront icon for retail stores
+        markerContent = document.createElement('div');
+        markerContent.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="40" viewBox="0 0 32 40">
+          <path d="M16 0C7.2 0 0 7.2 0 16c0 12 16 24 16 24s16-12 16-24C32 7.2 24.8 0 16 0z" fill="${CONFIG.brandColor}"/>
+          <path d="M16 0C7.2 0 0 7.2 0 16c0 12 16 24 16 24s16-12 16-24C32 7.2 24.8 0 16 0z" fill="none" stroke="#fff" stroke-width="1.5"/>
+          <rect x="9" y="9" width="14" height="12" rx="1" fill="none" stroke="#1a1a1a" stroke-width="1.5"/>
+          <rect x="13" y="15" width="6" height="6" fill="#1a1a1a"/>
+          <line x1="9" y1="9" x2="16" y2="6" stroke="#1a1a1a" stroke-width="1.5"/>
+          <line x1="23" y1="9" x2="16" y2="6" stroke="#1a1a1a" stroke-width="1.5"/>
+        </svg>`;
+      } else if (storeType === 'on-premise') {
+        // Old-fashioned whiskey glass icon for bars/restaurants
+        markerContent = document.createElement('div');
+        markerContent.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="40" viewBox="0 0 32 40">
+          <path d="M16 0C7.2 0 0 7.2 0 16c0 12 16 24 16 24s16-12 16-24C32 7.2 24.8 0 16 0z" fill="${CONFIG.brandColor}"/>
+          <path d="M16 0C7.2 0 0 7.2 0 16c0 12 16 24 16 24s16-12 16-24C32 7.2 24.8 0 16 0z" fill="none" stroke="#fff" stroke-width="1.5"/>
+          <path d="M10 7 L10 14 C10 17 13 19 16 19 C19 19 22 17 22 14 L22 7 Z" fill="none" stroke="#1a1a1a" stroke-width="1.5" stroke-linejoin="round"/>
+          <line x1="16" y1="19" x2="16" y2="23" stroke="#1a1a1a" stroke-width="1.5"/>
+          <line x1="12" y1="23" x2="20" y2="23" stroke="#1a1a1a" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>`;
+      } else {
+        // Default pin for stores with no type
+        const pinElement = new PinElement({
+          background: CONFIG.brandColor,
+          borderColor: '#ffffff',
+          glyphColor: '#1a1a1a',
+          scale: 1.0
+        });
+        markerContent = pinElement.element;
+      }
 
       const marker = new AdvancedMarkerElement({
         map: map,
         position: { lat: store.lat, lng: store.lng },
-        content: pinElement.element,
+        content: markerContent,
         title: store.name
       });
 

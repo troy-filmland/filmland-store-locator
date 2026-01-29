@@ -13,6 +13,18 @@ if (!SHEET_CSV_URL) {
   process.exit(1);
 }
 
+// Product abbreviation → full name
+const PRODUCT_MAP = {
+  MM:   'Moonlight Mayhem!',
+  MMEC: 'Moonlight Mayhem! Extended Cut',
+  RR:   'Ryes of the Robots',
+  RREC: 'Ryes of the Robot Extended Cut',
+  QUAD: 'Quadraforce Blended Bourbon',
+  MMWP: 'Moonlight Mayhem! 2 the White Port Wolf',
+};
+
+const PRODUCT_ABBREVS = Object.keys(PRODUCT_MAP);
+
 async function fetchStores() {
   try {
     console.log('Fetching store data from Google Sheets...');
@@ -36,16 +48,15 @@ async function fetchStores() {
     // Transform and filter records
     const stores = records
       .filter(row => {
-        // Skip rows with missing lat/lng
         const lat = parseFloat(row.lat);
         const lng = parseFloat(row.lng);
         return !isNaN(lat) && !isNaN(lng);
       })
       .map(row => {
-        // Parse products from comma-separated string
-        const products = row.products
-          ? row.products.split(',').map(p => p.trim()).filter(p => p.length > 0)
-          : [];
+        // Collect full product names where abbreviated column is TRUE
+        const products = PRODUCT_ABBREVS
+          .filter(abbrev => row[abbrev] && row[abbrev].toUpperCase() === 'TRUE')
+          .map(abbrev => PRODUCT_MAP[abbrev]);
 
         return {
           name: row.store_name || '',
