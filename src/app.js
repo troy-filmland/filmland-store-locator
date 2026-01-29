@@ -203,7 +203,7 @@
               let locationText = best.formatted_address;
               const locationLabel = document.getElementById('current-location-label');
               if (locationLabel) {
-                locationLabel.textContent = `Showing stores near ${locationText}`;
+                locationLabel.textContent = `Stores near ${locationText}`;
                 locationLabel.style.display = 'block';
               }
             }
@@ -224,7 +224,7 @@
   /**
    * Show all stores on map (no location filter)
    */
-  function showAllStores() {
+  async function showAllStores() {
     filteredStores = [...stores];
 
     // Apply type filter
@@ -241,7 +241,7 @@
       );
     }
 
-    updateMarkers();
+    await updateMarkers();
     updateStoreList();
 
     // Update placeholder
@@ -254,7 +254,7 @@
   /**
    * Filter and display stores based on current location and radius
    */
-  function filterAndDisplayStores() {
+  async function filterAndDisplayStores() {
     if (!currentLocation) {
       showAllStores();
       return;
@@ -284,7 +284,7 @@
       );
     }
 
-    updateMarkers();
+    await updateMarkers();
     updateStoreList();
 
     // Update results info
@@ -550,7 +550,7 @@
         button.classList.add('active');
       }
 
-      button.addEventListener('click', () => {
+      button.addEventListener('click', async () => {
         currentRadius = radius;
 
         // Update active state
@@ -560,7 +560,7 @@
         button.classList.add('active');
 
         // Re-filter and display
-        filterAndDisplayStores();
+        await filterAndDisplayStores();
       });
 
       container.appendChild(button);
@@ -595,9 +595,9 @@
       select.appendChild(option);
     });
 
-    select.addEventListener('change', (e) => {
+    select.addEventListener('change', async (e) => {
       currentFilters.type = e.target.value;
-      filterAndDisplayStores();
+      await filterAndDisplayStores();
     });
   }
 
@@ -636,9 +636,9 @@
       select.appendChild(option);
     });
 
-    select.addEventListener('change', (e) => {
+    select.addEventListener('change', async (e) => {
       currentFilters.product = e.target.value;
-      filterAndDisplayStores();
+      await filterAndDisplayStores();
     });
   }
 
