@@ -26,6 +26,17 @@
     brandColor: '#c8a951'
   };
 
+  // Display label mapping for store types
+  const TYPE_LABELS = {
+    'off-premise': 'Retail',
+    'on-premise': 'Bars & Restaurants'
+  };
+
+  function getTypeDisplayLabel(type) {
+    if (!type) return '';
+    return TYPE_LABELS[type.toLowerCase()] || type;
+  }
+
   // State
   let map;
   let stores = [];
@@ -153,8 +164,11 @@
       autocompleteElement.addEventListener('gmp-placeselect', async (event) => {
         const place = event.place;
 
-        // PlaceAutocompleteElement provides location automatically, only fetch as fallback
-        const location = place.location || (await place.fetchFields({ fields: ['location'] })).location;
+        // PlaceAutocompleteElement may not include location by default; fetch if needed
+        if (!place.location) {
+          await place.fetchFields({ fields: ['location'] });
+        }
+        const location = place.location;
 
         if (location) {
           currentLocation = {
@@ -338,25 +352,40 @@
       const storeType = (store.type || '').toLowerCase();
 
       if (storeType === 'off-premise') {
-        // Building/storefront icon for retail stores
+        // Retail pin — storefront/building icon
         markerContent = document.createElement('div');
-        markerContent.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="40" viewBox="0 0 32 40">
-          <path d="M16 0C7.2 0 0 7.2 0 16c0 12 16 24 16 24s16-12 16-24C32 7.2 24.8 0 16 0z" fill="${CONFIG.brandColor}"/>
-          <path d="M16 0C7.2 0 0 7.2 0 16c0 12 16 24 16 24s16-12 16-24C32 7.2 24.8 0 16 0z" fill="none" stroke="#fff" stroke-width="1.5"/>
-          <rect x="9" y="9" width="14" height="12" rx="1" fill="none" stroke="#1a1a1a" stroke-width="1.5"/>
-          <rect x="13" y="15" width="6" height="6" fill="#1a1a1a"/>
-          <line x1="9" y1="9" x2="16" y2="6" stroke="#1a1a1a" stroke-width="1.5"/>
-          <line x1="23" y1="9" x2="16" y2="6" stroke="#1a1a1a" stroke-width="1.5"/>
+        markerContent.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="36" height="48" viewBox="0 0 36 48">
+          <defs>
+            <filter id="rs" x="-10%" y="-5%" width="120%" height="120%">
+              <feDropShadow dx="0" dy="1" stdDeviation="1.5" flood-opacity="0.3"/>
+            </filter>
+          </defs>
+          <path d="M18 0C8.06 0 0 8.06 0 18c0 13.5 18 30 18 30s18-16.5 18-30C36 8.06 27.94 0 18 0z" fill="${CONFIG.brandColor}" filter="url(#rs)"/>
+          <path d="M18 0C8.06 0 0 8.06 0 18c0 13.5 18 30 18 30s18-16.5 18-30C36 8.06 27.94 0 18 0z" fill="none" stroke="#fff" stroke-width="1.5"/>
+          <circle cx="18" cy="18" r="12" fill="#fff" opacity="0.15"/>
+          <rect x="10" y="13" width="16" height="12" rx="1" fill="none" stroke="#1a1a1a" stroke-width="1.6"/>
+          <path d="M9 13 L18 9 L27 13" fill="none" stroke="#1a1a1a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          <rect x="15" y="19" width="6" height="6" rx="0.5" fill="#1a1a1a"/>
+          <rect x="12" y="15" width="4" height="3" rx="0.5" fill="none" stroke="#1a1a1a" stroke-width="1.2"/>
+          <rect x="20" y="15" width="4" height="3" rx="0.5" fill="none" stroke="#1a1a1a" stroke-width="1.2"/>
         </svg>`;
       } else if (storeType === 'on-premise') {
-        // Old-fashioned whiskey glass icon for bars/restaurants
+        // Bars & Restaurants pin — old-fashioned whiskey glass icon
         markerContent = document.createElement('div');
-        markerContent.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="40" viewBox="0 0 32 40">
-          <path d="M16 0C7.2 0 0 7.2 0 16c0 12 16 24 16 24s16-12 16-24C32 7.2 24.8 0 16 0z" fill="${CONFIG.brandColor}"/>
-          <path d="M16 0C7.2 0 0 7.2 0 16c0 12 16 24 16 24s16-12 16-24C32 7.2 24.8 0 16 0z" fill="none" stroke="#fff" stroke-width="1.5"/>
-          <path d="M10 7 L10 14 C10 17 13 19 16 19 C19 19 22 17 22 14 L22 7 Z" fill="none" stroke="#1a1a1a" stroke-width="1.5" stroke-linejoin="round"/>
-          <line x1="16" y1="19" x2="16" y2="23" stroke="#1a1a1a" stroke-width="1.5"/>
-          <line x1="12" y1="23" x2="20" y2="23" stroke="#1a1a1a" stroke-width="1.5" stroke-linecap="round"/>
+        markerContent.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="36" height="48" viewBox="0 0 36 48">
+          <defs>
+            <filter id="bs" x="-10%" y="-5%" width="120%" height="120%">
+              <feDropShadow dx="0" dy="1" stdDeviation="1.5" flood-opacity="0.3"/>
+            </filter>
+          </defs>
+          <path d="M18 0C8.06 0 0 8.06 0 18c0 13.5 18 30 18 30s18-16.5 18-30C36 8.06 27.94 0 18 0z" fill="${CONFIG.brandColor}" filter="url(#bs)"/>
+          <path d="M18 0C8.06 0 0 8.06 0 18c0 13.5 18 30 18 30s18-16.5 18-30C36 8.06 27.94 0 18 0z" fill="none" stroke="#fff" stroke-width="1.5"/>
+          <circle cx="18" cy="18" r="12" fill="#fff" opacity="0.15"/>
+          <path d="M11.5 9 L13 20 C13 20 13.5 22 18 22 C22.5 22 23 20 23 20 L24.5 9 Z" fill="none" stroke="#1a1a1a" stroke-width="1.6" stroke-linejoin="round"/>
+          <path d="M13.4 14 L12.6 18.5 C12.8 19.8 14.5 20.5 18 20.5 C21.5 20.5 23.2 19.8 23.4 18.5 L22.6 14 Z" fill="#1a1a1a" opacity="0.25"/>
+          <line x1="18" y1="22" x2="18" y2="25" stroke="#1a1a1a" stroke-width="1.6"/>
+          <line x1="14" y1="25" x2="22" y2="25" stroke="#1a1a1a" stroke-width="1.8" stroke-linecap="round"/>
+          <circle cx="21" cy="11" r="1.5" fill="none" stroke="#1a1a1a" stroke-width="1.2"/>
         </svg>`;
       } else {
         // Default pin for stores with no type
@@ -494,7 +523,7 @@
     }
 
     if (store.type) {
-      html += `<span class="store-type-badge">${escapeHtml(store.type)}</span>`;
+      html += `<span class="store-type-badge">${escapeHtml(getTypeDisplayLabel(store.type))}</span>`;
     }
 
     if (store.products && store.products.length > 0) {
@@ -620,7 +649,7 @@
     types.forEach(type => {
       const option = document.createElement('option');
       option.value = type.toLowerCase();
-      option.textContent = type === 'all' ? 'All Types' : type;
+      option.textContent = type === 'all' ? 'All Types' : getTypeDisplayLabel(type);
       select.appendChild(option);
     });
 
