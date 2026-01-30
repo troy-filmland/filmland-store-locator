@@ -166,7 +166,7 @@
         const placePrediction = event.placePrediction;
         const place = placePrediction.toPlace();
 
-        await place.fetchFields({ fields: ['location'] });
+        await place.fetchFields({ fields: ['location', 'displayName'] });
         const location = place.location;
 
         if (location) {
@@ -175,12 +175,18 @@
             lng: location.lng()
           };
 
-          // Center map on selected place
-          map.setCenter(currentLocation);
-          map.setZoom(11);
+          // Update location label
+          const locationLabel = document.getElementById('current-location-label');
+          if (locationLabel) {
+            const locationText = place.displayName || placePrediction.text?.toString() || '';
+            if (locationText) {
+              locationLabel.textContent = `Stores near ${locationText}`;
+              locationLabel.style.display = 'block';
+            }
+          }
 
           // Filter and display stores
-          filterAndDisplayStores();
+          await filterAndDisplayStores();
         }
       });
 
