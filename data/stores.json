@@ -590,25 +590,6 @@
     ]
   },
   {
-    "name": "Filmland Spirits - SAMPLES",
-    "address": "Bluegrass Bottling LLC",
-    "city": "West Hills",
-    "state": "CA",
-    "zip": "91307",
-    "phone": "(310) 435-0624",
-    "type": "Off-Premise",
-    "lat": 34.2124444,
-    "lng": -118.6848112,
-    "products": [
-      "Moonlight Mayhem!",
-      "Moonlight Mayhem! Extended Cut",
-      "Ryes of the Robots",
-      "Ryes of the Robot Extended Cut",
-      "Quadraforce Blended Bourbon",
-      "Moonlight Mayhem! 2 the White Port Wolf"
-    ]
-  },
-  {
     "name": "Remedy Liquor",
     "address": "Remedy Wholesale LLC",
     "city": "Glendale",
@@ -928,24 +909,6 @@
     "lng": -117.15175,
     "products": [
       "Moonlight Mayhem! Extended Cut"
-    ]
-  },
-  {
-    "name": "Filmland Spirits",
-    "address": "22512 Cantlay Street",
-    "city": "West HIlls",
-    "state": "CA",
-    "zip": "91307",
-    "phone": "(310) 435-0624",
-    "type": "Off-Premise",
-    "lat": 34.2019551,
-    "lng": -118.6171145,
-    "products": [
-      "Moonlight Mayhem!",
-      "Moonlight Mayhem! Extended Cut",
-      "Ryes of the Robots",
-      "Ryes of the Robot Extended Cut",
-      "Quadraforce Blended Bourbon"
     ]
   },
   {
