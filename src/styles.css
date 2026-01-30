@@ -51,7 +51,6 @@ a:hover {
   display: flex;
   flex-direction: column;
   background-color: var(--filmland-dark);
-  overflow: hidden;
 }
 
 .store-locator-wrapper {

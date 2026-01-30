@@ -155,7 +155,7 @@
       });
 
       // Style the autocomplete element
-      autocompleteElement.placeholder = 'Enter your zip code or city';
+      autocompleteElement.placeholder = 'Enter your zip or city';
 
       // Add to DOM
       const searchInput = document.getElementById('search-input');
@@ -299,7 +299,7 @@
     // Update placeholder
     const resultsInfo = document.getElementById('results-info');
     if (resultsInfo) {
-      resultsInfo.textContent = 'Enter your zip code or city to find nearby stores';
+      resultsInfo.textContent = 'Enter your zip or city to find nearby stores';
     }
   }
 
