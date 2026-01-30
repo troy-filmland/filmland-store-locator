@@ -23,7 +23,7 @@
     })(),
     defaultRadius: 10,
     radiusOptions: [5, 10, 25, 50, 100],
-    brandColor: '#c8a951'
+    brandColor: '#cc9966'
   };
 
   // Display label mapping for store types

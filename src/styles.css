@@ -1,6 +1,6 @@
 /**
  * Filmland Store Locator Styles
- * Brand colors: Dark (#1a1a1a), Gold (#c8a951)
+ * Brand colors: Dark (#1a1a1a), Gold (#cc9966)
  * Fonts: Bitter (headings), PT Sans (body)
  */
 
@@ -12,7 +12,7 @@
 
 :root {
   --filmland-dark: #1a1a1a;
-  --filmland-gold: #c8a951;
+  --filmland-gold: #cc9966;
   --filmland-light-gray: #e5e5e5;
   --filmland-medium-gray: #666666;
   --filmland-text-light: #cccccc;
@@ -273,15 +273,15 @@ a:hover {
 
 .store-type-badge {
   display: inline-block;
-  padding: 4px 12px;
-  background-color: var(--filmland-gold);
-  color: var(--filmland-dark);
-  font-size: 12px;
+  padding: 0;
+  background-color: transparent;
+  color: var(--filmland-gold);
+  font-size: 11px;
   font-weight: 700;
-  border-radius: 4px;
+  border-radius: 0;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 8px;
+  letter-spacing: 1px;
+  margin-bottom: 4px;
 }
 
 .store-products {
@@ -317,7 +317,7 @@ a:hover {
 
 .store-directions:hover {
   opacity: 1;
-  background-color: #d4b661;
+  background-color: #ddaa77;
   transform: translateY(-1px);
 }
 
@@ -484,5 +484,5 @@ a:hover {
 }
 
 .store-list-section::-webkit-scrollbar-thumb:hover {
-  background: #d4b661;
+  background: #ddaa77;
 }
