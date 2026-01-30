@@ -446,6 +446,7 @@ a:hover {
   .store-locator-sidebar {
     display: flex;
     order: 2;
+    max-height: 80vh;
   }
 
   .store-locator-map {
