@@ -161,12 +161,46 @@
       const searchInput = document.getElementById('search-input');
       searchInput.appendChild(autocompleteElement);
 
+      // Handle Enter key: geocode the typed text as fallback
+      autocompleteElement.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          // Small delay to let gmp-select fire first if user selected from dropdown
+          setTimeout(async () => {
+            const input = autocompleteElement.shadowRoot?.querySelector('input');
+            const query = input?.value;
+            if (!query) return;
+
+            // Use Geocoder to resolve typed text
+            const geocoder = new google.maps.Geocoder();
+            try {
+              const result = await geocoder.geocode({ address: query });
+              if (result.results && result.results.length > 0) {
+                const loc = result.results[0].geometry.location;
+                currentLocation = { lat: loc.lat(), lng: loc.lng() };
+
+                const locationLabel = document.getElementById('current-location-label');
+                if (locationLabel) {
+                  const addr = result.results[0].formatted_address || query;
+                  const cleanText = addr.replace(/,\s*(USA|United States)$/i, '');
+                  locationLabel.textContent = `Stores near ${cleanText}`;
+                  locationLabel.style.display = 'block';
+                }
+
+                await filterAndDisplayStores();
+              }
+            } catch (err) {
+              console.error('Geocode failed:', err);
+            }
+          }, 300);
+        }
+      });
+
       // Listen for place selection
       autocompleteElement.addEventListener('gmp-select', async (event) => {
         const placePrediction = event.placePrediction;
         const place = placePrediction.toPlace();
 
-        await place.fetchFields({ fields: ['location', 'displayName'] });
+        await place.fetchFields({ fields: ['location', 'formattedAddress'] });
         const location = place.location;
 
         if (location) {
@@ -175,12 +209,14 @@
             lng: location.lng()
           };
 
-          // Update location label
+          // Update location label with full address
           const locationLabel = document.getElementById('current-location-label');
           if (locationLabel) {
-            const locationText = place.displayName || placePrediction.text?.toString() || '';
+            const locationText = place.formattedAddress || placePrediction.text?.toString() || '';
             if (locationText) {
-              locationLabel.textContent = `Stores near ${locationText}`;
+              // Remove country suffix (", USA" or ", United States")
+              const cleanText = locationText.replace(/,\s*(USA|United States)$/i, '');
+              locationLabel.textContent = `Stores near ${cleanText}`;
               locationLabel.style.display = 'block';
             }
           }

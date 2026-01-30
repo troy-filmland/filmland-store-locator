@@ -46,10 +46,12 @@ a:hover {
 /* Main Container */
 .store-locator-container {
   width: 100%;
+  min-width: 100%;
   height: 700px;
   display: flex;
   flex-direction: column;
   background-color: var(--filmland-dark);
+  overflow: hidden;
 }
 
 .store-locator-wrapper {
