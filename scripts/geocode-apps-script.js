@@ -26,13 +26,132 @@ function onOpen() {
  * One-button update: geocodes new stores, then pushes to GitHub
  */
 function updateWebsite() {
-  const ui = SpreadsheetApp.getUi();
+  // Step 1: Normalize any new addresses
+  normalizeAddresses();
 
-  // Step 1: Geocode any new stores
+  // Step 2: Geocode any new stores
   const geocodeResult = geocodeNewStores();
 
-  // Step 2: Push to GitHub
+  // Step 3: Push to GitHub
   triggerGitHubSync(geocodeResult);
+}
+
+/**
+ * Normalizes addresses using Google's geocoder.
+ * Writes back the formatted address, city, state, zip from Google.
+ * Skips rows where the "normalized" column is already TRUE.
+ * Sets "normalized" to TRUE after processing.
+ * Run once on existing data, then only new rows get normalized.
+ */
+function normalizeAddresses() {
+  const sheet = SpreadsheetApp.getActiveSheet();
+  const dataRange = sheet.getDataRange();
+  const values = dataRange.getValues();
+  const headers = values[0];
+
+  const addressCol = headers.indexOf('address');
+  const cityCol = headers.indexOf('city');
+  const stateCol = headers.indexOf('state');
+  const zipCol = headers.indexOf('zip');
+  let normalizedCol = headers.indexOf('normalized');
+
+  if (addressCol === -1 || cityCol === -1 || stateCol === -1) {
+    SpreadsheetApp.getUi().alert('Error: Required columns not found (address, city, state).');
+    return;
+  }
+
+  // Add "normalized" column if it doesn't exist
+  if (normalizedCol === -1) {
+    normalizedCol = headers.length;
+    sheet.getRange(1, normalizedCol + 1).setValue('normalized');
+  }
+
+  let count = 0;
+  let errorCount = 0;
+
+  for (let i = 1; i < values.length; i++) {
+    const row = values[i];
+
+    // Skip already normalized rows
+    if (row[normalizedCol] === true || row[normalizedCol] === 'TRUE' || row[normalizedCol] === true) {
+      continue;
+    }
+
+    const address = row[addressCol];
+    const city = row[cityCol];
+    const state = row[stateCol];
+    const zip = row[zipCol];
+
+    if (!address || !city || !state) continue;
+
+    const fullAddress = `${address}, ${city}, ${state}${zip ? ' ' + zip : ''}`;
+
+    try {
+      const geocoder = Maps.newGeocoder();
+      const result = geocoder.geocode(fullAddress);
+
+      if (result.results && result.results.length > 0) {
+        const r = result.results[0];
+        const components = r.address_components;
+
+        // Extract normalized parts
+        let newAddress = '';
+        let newCity = '';
+        let newState = '';
+        let newZip = '';
+
+        for (const c of components) {
+          if (c.types.includes('street_number')) {
+            newAddress = c.long_name;
+          } else if (c.types.includes('route')) {
+            newAddress += (newAddress ? ' ' : '') + c.long_name;
+          } else if (c.types.includes('subpremise')) {
+            newAddress += ' ' + c.long_name;
+          } else if (c.types.includes('locality')) {
+            newCity = c.long_name;
+          } else if (c.types.includes('administrative_area_level_1')) {
+            newState = c.short_name;
+          } else if (c.types.includes('postal_code')) {
+            newZip = c.long_name;
+          }
+        }
+
+        // Only overwrite if we got a valid address back
+        if (newAddress) {
+          sheet.getRange(i + 1, addressCol + 1).setValue(newAddress);
+        }
+        if (newCity) {
+          sheet.getRange(i + 1, cityCol + 1).setValue(newCity);
+        }
+        if (newState) {
+          sheet.getRange(i + 1, stateCol + 1).setValue(newState);
+        }
+        if (newZip && zipCol !== -1) {
+          sheet.getRange(i + 1, zipCol + 1).setValue(newZip);
+        }
+
+        // Mark as normalized
+        sheet.getRange(i + 1, normalizedCol + 1).setValue(true);
+        count++;
+        Logger.log(`Row ${i + 1}: Normalized "${fullAddress}" → "${newAddress}, ${newCity}, ${newState} ${newZip}"`);
+      } else {
+        Logger.log(`Row ${i + 1}: No results for "${fullAddress}"`);
+        errorCount++;
+      }
+
+      Utilities.sleep(200);
+    } catch (error) {
+      Logger.log(`Row ${i + 1}: Error: ${error}`);
+      errorCount++;
+    }
+  }
+
+  SpreadsheetApp.getUi().alert(
+    `Address Normalization Complete\n\n` +
+    `Normalized: ${count} addresses\n` +
+    `Errors: ${errorCount}\n\n` +
+    `Check logs for details.`
+  );
 }
 
 /**
