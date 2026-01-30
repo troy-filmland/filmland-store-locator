@@ -100,7 +100,8 @@
    */
   async function loadStores() {
     try {
-      const response = await fetch(CONFIG.dataUrl);
+      const cacheBust = `?t=${Date.now()}`;
+      const response = await fetch(CONFIG.dataUrl + cacheBust);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
