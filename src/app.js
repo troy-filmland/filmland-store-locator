@@ -150,7 +150,7 @@
 
       // Create autocomplete element
       autocompleteElement = new PlaceAutocompleteElement({
-        componentRestrictions: { country: 'us' }
+        includedRegionCodes: ['us']
       });
 
       // Style the autocomplete element
@@ -161,13 +161,11 @@
       searchInput.appendChild(autocompleteElement);
 
       // Listen for place selection
-      autocompleteElement.addEventListener('gmp-placeselect', async (event) => {
-        const place = event.place;
+      autocompleteElement.addEventListener('gmp-select', async (event) => {
+        const placePrediction = event.placePrediction;
+        const place = placePrediction.toPlace();
 
-        // PlaceAutocompleteElement may not include location by default; fetch if needed
-        if (!place.location) {
-          await place.fetchFields({ fields: ['location'] });
-        }
+        await place.fetchFields({ fields: ['location'] });
         const location = place.location;
 
         if (location) {
