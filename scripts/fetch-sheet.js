@@ -65,6 +65,7 @@ async function fetchStores() {
           state: row.state || '',
           zip: row.zip || '',
           phone: row.phone || '',
+          website: row.website || '',
           type: row.type || '',
           lat: parseFloat(row.lat),
           lng: parseFloat(row.lng),

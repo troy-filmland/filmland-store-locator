@@ -271,6 +271,15 @@ a:hover {
   color: var(--filmland-gold);
 }
 
+.store-website {
+  font-size: 14px;
+  margin: 0 0 8px 0;
+}
+
+.store-website a {
+  color: var(--filmland-gold);
+}
+
 .store-type-badge {
   display: inline-block;
   padding: 0;
@@ -359,6 +368,15 @@ a:hover {
 }
 
 .info-phone a {
+  color: #0066cc;
+}
+
+.info-website {
+  font-size: 13px;
+  margin: 0 0 8px 0;
+}
+
+.info-website a {
   color: #0066cc;
 }
 

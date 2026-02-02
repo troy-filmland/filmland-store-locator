@@ -511,6 +511,10 @@
       content += `<p class="info-phone"><a href="tel:${escapeHtml(store.phone)}">${escapeHtml(store.phone)}</a></p>`;
     }
 
+    if (store.website) {
+      content += `<p class="info-website"><a href="${escapeHtml(store.website)}" target="_blank" rel="noopener noreferrer">Visit Website</a></p>`;
+    }
+
     content += `
         <p class="info-directions">
           <a href="${directionsUrl}" target="_blank" rel="noopener noreferrer">Get Directions</a>
@@ -574,6 +578,10 @@
 
     if (store.phone) {
       html += `<p class="store-phone"><a href="tel:${escapeHtml(store.phone)}">${escapeHtml(store.phone)}</a></p>`;
+    }
+
+    if (store.website) {
+      html += `<p class="store-website"><a href="${escapeHtml(store.website)}" target="_blank" rel="noopener noreferrer">Visit Website</a></p>`;
     }
 
     if (store.type) {

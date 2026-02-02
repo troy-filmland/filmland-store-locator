@@ -9,8 +9,7 @@ const __dirname = dirname(__filename);
 const DATA_DIR = join(__dirname, '../data');
 const OUTPUT_FILE = join(DATA_DIR, 'initial-import.csv');
 
-const OFF_PREM_FILE = join(DATA_DIR, 'OFF Prem Acct Info 6 month RAW DATA.xlsx');
-const ON_PREM_FILE = join(DATA_DIR, 'On Prem Acct Info 6 month RAW DATA.xlsx');
+const INPUT_FILE = join(DATA_DIR, 'on and off premise full store list.xlsx');
 
 // Product abbreviation → full name (order matters for CSV columns)
 const PRODUCT_MAP = {
@@ -98,8 +97,8 @@ function createStoreKey(address, city, state, zip) {
 }
 
 /**
- * Read an xlsx file and return rows as objects.
- * Header at row index 3, data starts at row index 6.
+ * Read the combined xlsx file and return rows as objects.
+ * Header at row index 1, data starts at row index 2.
  */
 function readXlsx(filePath) {
   const workbook = XLSX.readFile(filePath);
@@ -109,12 +108,12 @@ function readXlsx(filePath) {
   // Convert to array of arrays (raw)
   const raw = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
 
-  // Header row is at index 3
-  const headers = raw[3].map(h => String(h).trim());
+  // Header row is at index 1
+  const headers = raw[1].map(h => String(h).trim());
 
-  // Data rows start at index 6
+  // Data rows start at index 2
   const rows = [];
-  for (let i = 6; i < raw.length; i++) {
+  for (let i = 2; i < raw.length; i++) {
     const row = raw[i];
     if (!row || row.length === 0) continue;
 
@@ -144,19 +143,10 @@ function escapeCsvField(field) {
  */
 function pivotRawData() {
   try {
-    console.log('Reading xlsx files...');
+    console.log('Reading xlsx file...');
 
-    const offPremRows = readXlsx(OFF_PREM_FILE);
-    console.log(`Off-Premise: ${offPremRows.length} raw rows`);
-
-    const onPremRows = readXlsx(ON_PREM_FILE);
-    console.log(`On-Premise: ${onPremRows.length} raw rows`);
-
-    // Combine with type tag
-    const allRows = [
-      ...offPremRows.map(r => ({ ...r, _type: 'Off-Premise' })),
-      ...onPremRows.map(r => ({ ...r, _type: 'On-Premise' })),
-    ];
+    const allRows = readXlsx(INPUT_FILE);
+    console.log(`Total raw rows: ${allRows.length}`);
 
     const storesMap = new Map();
 
@@ -167,9 +157,13 @@ function pivotRawData() {
       const zip = String(row['Zip Code'] || '').trim();
       const storeName = String(row['Retail Accounts'] || '').trim();
       const itemName = String(row['Item Names'] || '').trim();
+      const onOff = String(row['OnOff Premises'] || '').trim().toUpperCase();
 
       // Skip total/summary rows
       if (!address || !city || address === 'Total' || city === 'Total' || storeName === 'Total') continue;
+
+      // Determine type from OnOff Premises column
+      const type = onOff === 'ON' ? 'On-Premise' : 'Off-Premise';
 
       const storeKey = createStoreKey(address, city, state, zip);
 
@@ -181,7 +175,7 @@ function pivotRawData() {
           state,
           zip,
           phone: cleanPhone(row['Phone']),
-          type: row._type,
+          type,
           lat: '',
           lng: '',
           products: new Set(),

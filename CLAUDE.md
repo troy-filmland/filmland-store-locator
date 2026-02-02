@@ -63,7 +63,8 @@ The label mapping is in `src/app.js` in the `TYPE_LABELS` object.
 
 ## Google Sheet
 - Sheet ID: `1SCloGVtzpw14z2zcTEuV18teTNMpUmtoL1EKwEBHyYY`
-- Published CSV URL is stored in GitHub secret `SHEET_CSV_URL`
+- Published CSV URL: `https://docs.google.com/spreadsheets/d/e/2PACX-1vT_Gwm3hCvMF9c7iwmNsoqMoa5Of5LONuwTBd6qQv844GPnaQ0tXo4oC0rFMJMVXOrDXw-u5y466V9T/pub?gid=0&single=true&output=csv`
+- Also stored in GitHub secret `SHEET_CSV_URL` and local `.env`
 - If the sheet structure changes (columns added/removed/renamed), the sheet must be re-published: File > Share > Publish to web > Stop publishing > Publish again
 - The "Update Website" button (Filmland menu) geocodes new stores then triggers GitHub Action sync
 
