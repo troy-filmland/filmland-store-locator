@@ -879,7 +879,7 @@
 
     // Populate phone or Google search link
     if (phone) {
-      phoneDiv.innerHTML = `<a href="tel:${escapeHtml(phone)}">${escapeHtml(phone)}</a>`;
+      phoneDiv.innerHTML = `<a href="tel:${escapeHtml(phone)}">Call ${escapeHtml(phone)}</a>`;
     } else {
       const searchQuery = encodeURIComponent(`${storeName} ${city} ${state} phone`);
       phoneDiv.innerHTML = `<a href="https://www.google.com/search?q=${searchQuery}" target="_blank" rel="noopener noreferrer">Search for this store's phone number</a>`;

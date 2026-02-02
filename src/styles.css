@@ -519,18 +519,24 @@ a:hover {
 }
 
 .call-ahead-phone {
-  margin-bottom: 24px;
+  margin-bottom: 16px;
 }
 
 .call-ahead-phone a {
-  color: var(--filmland-gold);
-  font-size: 22px;
+  display: inline-block;
+  padding: 10px 24px;
+  background-color: var(--filmland-gold);
+  color: var(--filmland-dark);
   font-weight: 700;
+  font-size: 14px;
+  border-radius: 4px;
   text-decoration: none;
+  transition: background-color 0.2s;
 }
 
 .call-ahead-phone a:hover {
-  color: #ddaa77;
+  opacity: 1;
+  background-color: #ddaa77;
 }
 
 .call-ahead-continue {
