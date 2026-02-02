@@ -469,6 +469,87 @@ a:hover {
   }
 }
 
+/* Call-Ahead Modal */
+.call-ahead-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.75);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.call-ahead-modal {
+  background-color: #222;
+  border: 2px solid var(--filmland-gold);
+  border-radius: 8px;
+  padding: 32px;
+  max-width: 420px;
+  width: 90%;
+  position: relative;
+  text-align: center;
+}
+
+.call-ahead-close {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  background: none;
+  border: none;
+  color: var(--filmland-text-light);
+  font-size: 28px;
+  cursor: pointer;
+  line-height: 1;
+  padding: 4px;
+}
+
+.call-ahead-close:hover {
+  color: #fff;
+}
+
+.call-ahead-message {
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--filmland-text-light);
+  margin: 0 0 24px 0;
+}
+
+.call-ahead-phone {
+  margin-bottom: 24px;
+}
+
+.call-ahead-phone a {
+  color: var(--filmland-gold);
+  font-size: 22px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.call-ahead-phone a:hover {
+  color: #ddaa77;
+}
+
+.call-ahead-continue {
+  display: inline-block;
+  padding: 10px 24px;
+  background-color: var(--filmland-gold);
+  color: var(--filmland-dark);
+  font-weight: 700;
+  font-size: 14px;
+  border-radius: 4px;
+  text-decoration: none;
+  transition: background-color 0.2s;
+}
+
+.call-ahead-continue:hover {
+  opacity: 1;
+  background-color: #ddaa77;
+}
+
 /* Scrollbar Styling */
 .store-list-section::-webkit-scrollbar {
   width: 8px;

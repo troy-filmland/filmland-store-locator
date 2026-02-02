@@ -88,6 +88,7 @@
       setupGeolocation();
       setupMobileToggle();
       setupWindowResize();
+      setupCallAheadModal();
 
     } catch (error) {
       console.error('Initialization error:', error);
@@ -519,6 +520,18 @@
 
     infoWindow.setContent(content);
     infoWindow.open({ anchor: marker, map });
+
+    // Intercept directions link in info window
+    google.maps.event.addListenerOnce(infoWindow, 'domready', () => {
+      const iwContent = document.querySelector('.info-window');
+      const link = iwContent?.querySelector('.info-directions a');
+      if (link) {
+        link.addEventListener('click', (e) => {
+          e.preventDefault();
+          showCallAheadModal(directionsUrl, store.phone, store.name, store.city, store.state);
+        });
+      }
+    });
   }
 
   /**
@@ -579,6 +592,16 @@
     html += `<a href="${directionsUrl}" target="_blank" rel="noopener noreferrer" class="store-directions">Get Directions</a>`;
 
     card.innerHTML = html;
+
+    // Intercept directions link click to show call-ahead modal
+    const directionsLink = card.querySelector('.store-directions');
+    if (directionsLink) {
+      directionsLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        showCallAheadModal(directionsUrl, store.phone, store.name, store.city, store.state);
+      });
+    }
 
     // Add click listener
     card.addEventListener('click', () => {
@@ -842,6 +865,55 @@
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
+  }
+
+  /**
+   * Show call-ahead modal before opening directions
+   */
+  function showCallAheadModal(directionsUrl, phone, storeName, city, state) {
+    const overlay = document.getElementById('call-ahead-overlay');
+    const phoneDiv = document.getElementById('call-ahead-phone');
+    const continueBtn = document.getElementById('call-ahead-continue');
+
+    if (!overlay) return;
+
+    // Populate phone or Google search link
+    if (phone) {
+      phoneDiv.innerHTML = `<a href="tel:${escapeHtml(phone)}">${escapeHtml(phone)}</a>`;
+    } else {
+      const searchQuery = encodeURIComponent(`${storeName} ${city} ${state} phone`);
+      phoneDiv.innerHTML = `<a href="https://www.google.com/search?q=${searchQuery}" target="_blank" rel="noopener noreferrer">Search for this store's phone number</a>`;
+    }
+
+    // Set continue button
+    continueBtn.href = directionsUrl;
+    continueBtn.onclick = () => hideCallAheadModal();
+
+    // Show modal
+    overlay.style.display = 'flex';
+  }
+
+  function hideCallAheadModal() {
+    const overlay = document.getElementById('call-ahead-overlay');
+    if (overlay) overlay.style.display = 'none';
+  }
+
+  // Setup modal close handlers
+  function setupCallAheadModal() {
+    const overlay = document.getElementById('call-ahead-overlay');
+    const closeBtn = document.getElementById('call-ahead-close');
+
+    if (closeBtn) {
+      closeBtn.addEventListener('click', hideCallAheadModal);
+    }
+    if (overlay) {
+      overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) hideCallAheadModal();
+      });
+    }
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') hideCallAheadModal();
+    });
   }
 
   // Initialize when DOM is ready
