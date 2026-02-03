@@ -51,6 +51,7 @@
     type: 'all',
     product: 'all'
   };
+  let currentStateFilter = null;
   let isMobile = window.innerWidth <= 768;
   let mobileView = 'list'; // 'list' or 'map'
 
@@ -176,18 +177,51 @@
             try {
               const result = await geocoder.geocode({ address: query });
               if (result.results && result.results.length > 0) {
-                const loc = result.results[0].geometry.location;
-                currentLocation = { lat: loc.lat(), lng: loc.lng() };
+                const r = result.results[0];
+                const loc = r.geometry.location;
 
-                const locationLabel = document.getElementById('current-location-label');
-                if (locationLabel) {
-                  const addr = result.results[0].formatted_address || query;
-                  const cleanText = addr.replace(/,\s*(USA|United States)$/i, '');
-                  locationLabel.textContent = `Stores near ${cleanText}`;
-                  locationLabel.style.display = 'block';
+                // Check if this is a state-level search
+                const isStateSearch = r.types?.includes('administrative_area_level_1');
+
+                // Extract state code
+                let stateCode = null;
+                if (isStateSearch && r.address_components) {
+                  const stateComponent = r.address_components.find(c =>
+                    c.types?.includes('administrative_area_level_1')
+                  );
+                  if (stateComponent) {
+                    stateCode = stateComponent.short_name;
+                  }
                 }
 
-                await filterAndDisplayStores();
+                const locationLabel = document.getElementById('current-location-label');
+
+                if (isStateSearch && stateCode) {
+                  // State-level search
+                  currentLocation = null;
+                  currentStateFilter = stateCode;
+
+                  if (locationLabel) {
+                    const stateName = r.formatted_address?.replace(/,\s*(USA|United States)$/i, '') || stateCode;
+                    locationLabel.textContent = `Stores in ${stateName}`;
+                    locationLabel.style.display = 'block';
+                  }
+
+                  await filterByState(stateCode);
+                } else {
+                  // City/address search
+                  currentLocation = { lat: loc.lat(), lng: loc.lng() };
+                  currentStateFilter = null;
+
+                  if (locationLabel) {
+                    const addr = r.formatted_address || query;
+                    const cleanText = addr.replace(/,\s*(USA|United States)$/i, '');
+                    locationLabel.textContent = `Stores near ${cleanText}`;
+                    locationLabel.style.display = 'block';
+                  }
+
+                  await filterAndDisplayStores();
+                }
               }
             } catch (err) {
               console.error('Geocode failed:', err);
@@ -201,29 +235,60 @@
         const placePrediction = event.placePrediction;
         const place = placePrediction.toPlace();
 
-        await place.fetchFields({ fields: ['location', 'formattedAddress'] });
+        await place.fetchFields({ fields: ['location', 'formattedAddress', 'types', 'addressComponents'] });
         const location = place.location;
 
         if (location) {
-          currentLocation = {
-            lat: location.lat(),
-            lng: location.lng()
-          };
+          // Check if this is a state-level search
+          const isStateSearch = place.types?.includes('administrative_area_level_1');
 
-          // Update location label with full address
-          const locationLabel = document.getElementById('current-location-label');
-          if (locationLabel) {
-            const locationText = place.formattedAddress || placePrediction.text?.toString() || '';
-            if (locationText) {
-              // Remove country suffix (", USA" or ", United States")
-              const cleanText = locationText.replace(/,\s*(USA|United States)$/i, '');
-              locationLabel.textContent = `Stores near ${cleanText}`;
-              locationLabel.style.display = 'block';
+          // Extract state code if this is a state search
+          let stateCode = null;
+          if (isStateSearch && place.addressComponents) {
+            const stateComponent = place.addressComponents.find(c =>
+              c.types?.includes('administrative_area_level_1')
+            );
+            if (stateComponent) {
+              stateCode = stateComponent.shortText;
             }
           }
 
-          // Filter and display stores
-          await filterAndDisplayStores();
+          if (isStateSearch && stateCode) {
+            // State-level search: show all stores in that state
+            currentLocation = null; // Clear location-based filtering
+            currentStateFilter = stateCode;
+
+            const locationLabel = document.getElementById('current-location-label');
+            if (locationLabel) {
+              const stateName = place.formattedAddress?.replace(/,\s*(USA|United States)$/i, '') || stateCode;
+              locationLabel.textContent = `Stores in ${stateName}`;
+              locationLabel.style.display = 'block';
+            }
+
+            await filterByState(stateCode);
+          } else {
+            // City/address search: use distance-based filtering
+            currentLocation = {
+              lat: location.lat(),
+              lng: location.lng()
+            };
+            currentStateFilter = null;
+
+            // Update location label with full address
+            const locationLabel = document.getElementById('current-location-label');
+            if (locationLabel) {
+              const locationText = place.formattedAddress || placePrediction.text?.toString() || '';
+              if (locationText) {
+                // Remove country suffix (", USA" or ", United States")
+                const cleanText = locationText.replace(/,\s*(USA|United States)$/i, '');
+                locationLabel.textContent = `Stores near ${cleanText}`;
+                locationLabel.style.display = 'block';
+              }
+            }
+
+            // Filter and display stores
+            await filterAndDisplayStores();
+          }
         }
       });
 
@@ -346,6 +411,51 @@
         resultsInfo.innerHTML = `<div class="no-results">No stores found within ${currentRadius} miles. Try expanding your search.</div>`;
       } else {
         resultsInfo.textContent = `${filteredStores.length} store${filteredStores.length !== 1 ? 's' : ''} within ${currentRadius} miles`;
+      }
+    }
+
+    await updateMarkers();
+  }
+
+  /**
+   * Filter and display stores by state (for state-level searches)
+   */
+  async function filterByState(stateCode) {
+    // Filter by state
+    filteredStores = stores.filter(store =>
+      store.state && store.state.toUpperCase() === stateCode.toUpperCase()
+    );
+
+    // Apply type filter
+    if (currentFilters.type !== 'all') {
+      filteredStores = filteredStores.filter(store =>
+        store.type && store.type.toLowerCase() === currentFilters.type.toLowerCase()
+      );
+    }
+
+    // Apply product filter
+    if (currentFilters.product !== 'all') {
+      filteredStores = filteredStores.filter(store =>
+        store.products && store.products.includes(currentFilters.product)
+      );
+    }
+
+    // Sort alphabetically by city then name
+    filteredStores.sort((a, b) => {
+      const cityCompare = (a.city || '').localeCompare(b.city || '');
+      if (cityCompare !== 0) return cityCompare;
+      return (a.name || '').localeCompare(b.name || '');
+    });
+
+    updateStoreList();
+
+    // Update results info
+    const resultsInfo = document.getElementById('results-info');
+    if (resultsInfo) {
+      if (filteredStores.length === 0) {
+        resultsInfo.innerHTML = `<div class="no-results">No stores found in ${stateCode}.</div>`;
+      } else {
+        resultsInfo.textContent = `${filteredStores.length} store${filteredStores.length !== 1 ? 's' : ''} in ${stateCode}`;
       }
     }
 
