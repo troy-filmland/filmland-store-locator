@@ -917,6 +917,12 @@
     continueBtn.href = directionsUrl;
     continueBtn.onclick = () => hideCallAheadModal();
 
+    // If map is fullscreen, move overlay into the fullscreen element so it renders on top
+    const fsElement = document.fullscreenElement || document.webkitFullscreenElement;
+    if (fsElement) {
+      fsElement.appendChild(overlay);
+    }
+
     // Show modal and lock scroll
     overlay.style.display = 'flex';
     document.body.style.overflow = 'hidden';
@@ -924,7 +930,14 @@
 
   function hideCallAheadModal() {
     const overlay = document.getElementById('call-ahead-overlay');
-    if (overlay) overlay.style.display = 'none';
+    if (overlay) {
+      overlay.style.display = 'none';
+      // Move overlay back to its original container if it was moved for fullscreen
+      const container = document.querySelector('.store-locator-container');
+      if (container && overlay.parentElement !== container) {
+        container.appendChild(overlay);
+      }
+    }
     document.body.style.overflow = '';
   }
 
