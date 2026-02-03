@@ -451,7 +451,9 @@
       marker.addListener('click', () => {
         showInfoWindow(marker, store);
         highlightStoreInList(store);
-        scrollToStore(store);
+        if (!isMobile) {
+          scrollToStore(store);
+        }
       });
 
       markers.push(marker);
