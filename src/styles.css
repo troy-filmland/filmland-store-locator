@@ -284,13 +284,13 @@ a:hover {
   display: inline-block;
   padding: 0;
   background-color: transparent;
-  color: var(--filmland-gold);
+  color: #ffffff;
   font-size: 11px;
   font-weight: 700;
   border-radius: 0;
   text-transform: uppercase;
   letter-spacing: 1px;
-  margin-bottom: 4px;
+  margin-bottom: 8px;
 }
 
 .store-products {
@@ -553,6 +553,27 @@ a:hover {
 }
 
 .call-ahead-phone a:hover {
+  opacity: 1;
+  background-color: #ddaa77;
+}
+
+.call-ahead-website {
+  margin-bottom: 16px;
+}
+
+.call-ahead-website a {
+  display: inline-block;
+  padding: 10px 24px;
+  background-color: var(--filmland-gold);
+  color: var(--filmland-dark);
+  font-weight: 700;
+  font-size: 14px;
+  border-radius: 4px;
+  text-decoration: none;
+  transition: background-color 0.2s;
+}
+
+.call-ahead-website a:hover {
   opacity: 1;
   background-color: #ddaa77;
 }

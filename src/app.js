@@ -532,7 +532,7 @@
       if (link) {
         link.addEventListener('click', (e) => {
           e.preventDefault();
-          showCallAheadModal(directionsUrl, store.phone, store.name, store.city, store.state);
+          showCallAheadModal(directionsUrl, store.phone, store.name, store.city, store.state, store.website);
         });
       }
     });
@@ -576,16 +576,16 @@
       </p>
     `;
 
+    if (store.type) {
+      html += `<span class="store-type-badge">${escapeHtml(getTypeDisplayLabel(store.type))}</span>`;
+    }
+
     if (store.phone) {
       html += `<p class="store-phone"><a href="tel:${escapeHtml(store.phone)}">${escapeHtml(store.phone)}</a></p>`;
     }
 
     if (store.website) {
       html += `<p class="store-website"><a href="${escapeHtml(store.website)}" target="_blank" rel="noopener noreferrer">Visit Website</a></p>`;
-    }
-
-    if (store.type) {
-      html += `<span class="store-type-badge">${escapeHtml(getTypeDisplayLabel(store.type))}</span>`;
     }
 
     if (store.products && store.products.length > 0) {
@@ -607,7 +607,7 @@
       directionsLink.addEventListener('click', (e) => {
         e.preventDefault();
         e.stopPropagation();
-        showCallAheadModal(directionsUrl, store.phone, store.name, store.city, store.state);
+        showCallAheadModal(directionsUrl, store.phone, store.name, store.city, store.state, store.website);
       });
     }
 
@@ -878,9 +878,10 @@
   /**
    * Show call-ahead modal before opening directions
    */
-  function showCallAheadModal(directionsUrl, phone, storeName, city, state) {
+  function showCallAheadModal(directionsUrl, phone, storeName, city, state, website) {
     const overlay = document.getElementById('call-ahead-overlay');
     const phoneDiv = document.getElementById('call-ahead-phone');
+    const websiteDiv = document.getElementById('call-ahead-website');
     const continueBtn = document.getElementById('call-ahead-continue');
 
     if (!overlay) return;
@@ -890,7 +891,17 @@
       phoneDiv.innerHTML = `<a href="tel:${escapeHtml(phone)}">Call ${escapeHtml(phone)}</a>`;
     } else {
       const searchQuery = encodeURIComponent(`${storeName} ${city} ${state} phone`);
-      phoneDiv.innerHTML = `<a href="https://www.google.com/search?q=${searchQuery}" target="_blank" rel="noopener noreferrer">Search for this store's phone number</a>`;
+      phoneDiv.innerHTML = `<a href="https://www.google.com/search?q=${searchQuery}" target="_blank" rel="noopener noreferrer">Search for Phone Number</a>`;
+    }
+
+    // Populate website or Google search link
+    if (websiteDiv) {
+      if (website) {
+        websiteDiv.innerHTML = `<a href="${escapeHtml(website)}" target="_blank" rel="noopener noreferrer">Check the Website</a>`;
+      } else {
+        const searchQuery = encodeURIComponent(`${storeName} ${city} ${state}`);
+        websiteDiv.innerHTML = `<a href="https://www.google.com/search?q=${searchQuery}" target="_blank" rel="noopener noreferrer">Search for Website</a>`;
+      }
     }
 
     // Set continue button
