@@ -939,7 +939,7 @@
   },
   {
     "name": "Grapes & Grains",
-    "address": "3520 Combine Street",
+    "address": "1240 Spring Street",
     "city": "Paso Robles",
     "state": "CA",
     "zip": "93446",
@@ -951,6 +951,8 @@
     "products": [
       "Moonlight Mayhem!",
       "Moonlight Mayhem! Extended Cut",
+      "Ryes of the Robots",
+      "Ryes of the Robot Extended Cut",
       "Quadraforce Blended Bourbon",
       "Moonlight Mayhem! 2 the White Port Wolf"
     ]
@@ -1626,8 +1628,8 @@
     "phone": "(805) 647-1979",
     "website": "http://wedeliverliquor.com/",
     "type": "Off-Premise",
-    "lat": 34.27658,
-    "lng": -119.168,
+    "lat": 34.2819413,
+    "lng": -119.145782,
     "products": [
       "Moonlight Mayhem!",
       "Moonlight Mayhem! Extended Cut",
