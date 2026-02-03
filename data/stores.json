@@ -5056,7 +5056,7 @@
     ]
   },
   {
-    "name": "#DERBY WINE & SPIRITS",
+    "name": "DERBY WINE & SPIRITS",
     "address": "831 North Baltimore Avenue",
     "city": "Derby",
     "state": "KS",
@@ -7707,24 +7707,6 @@
       "Moonlight Mayhem!",
       "Moonlight Mayhem! Extended Cut",
       "Ryes of the Robots"
-    ]
-  },
-  {
-    "name": "538",
-    "address": "Lakasta Corporation",
-    "city": "Los Angeles",
-    "state": "CA",
-    "zip": "90071",
-    "phone": "(213) 265-7221",
-    "website": "",
-    "type": "Off-Premise",
-    "lat": 34.052996,
-    "lng": -118.2548551,
-    "products": [
-      "Moonlight Mayhem!",
-      "Moonlight Mayhem! Extended Cut",
-      "Ryes of the Robots",
-      "Ryes of the Robot Extended Cut"
     ]
   },
   {
@@ -10778,25 +10760,6 @@
     "products": [
       "Moonlight Mayhem!",
       "Ryes of the Robots"
-    ]
-  },
-  {
-    "name": "100 % BILL BACK - SAMPLES",
-    "address": ".",
-    "city": "La Vista",
-    "state": "NE",
-    "zip": "68138",
-    "phone": "",
-    "website": "",
-    "type": "Off-Premise",
-    "lat": 41.1675179,
-    "lng": -96.1420947,
-    "products": [
-      "Moonlight Mayhem!",
-      "Moonlight Mayhem! Extended Cut",
-      "Ryes of the Robots",
-      "Ryes of the Robot Extended Cut",
-      "Moonlight Mayhem! 2 the White Port Wolf"
     ]
   },
   {
