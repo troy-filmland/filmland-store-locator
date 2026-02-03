@@ -888,6 +888,13 @@
 
     if (!overlay) return;
 
+    // Show store name
+    const messageEl = overlay.querySelector('.call-ahead-message');
+    const nameEl = document.getElementById('call-ahead-store-name');
+    if (nameEl) {
+      nameEl.textContent = storeName;
+    }
+
     // Populate phone or Google search link
     if (phone) {
       phoneDiv.innerHTML = `<a href="tel:${escapeHtml(phone)}">Call ${escapeHtml(phone)}</a>`;
