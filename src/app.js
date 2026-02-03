@@ -917,13 +917,15 @@
     continueBtn.href = directionsUrl;
     continueBtn.onclick = () => hideCallAheadModal();
 
-    // Show modal
+    // Show modal and lock scroll
     overlay.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
   }
 
   function hideCallAheadModal() {
     const overlay = document.getElementById('call-ahead-overlay');
     if (overlay) overlay.style.display = 'none';
+    document.body.style.overflow = '';
   }
 
   // Setup modal close handlers
