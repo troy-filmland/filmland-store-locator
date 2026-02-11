@@ -2437,7 +2437,7 @@
     "state": "CA",
     "zip": "92399",
     "phone": "(909) 735-1403",
-    "website": "",
+    "website": "https://www.facebook.com/p/CH-Liquor-100076904163610/",
     "type": "Off-Premise",
     "lat": 34.00451,
     "lng": -117.062,
@@ -2455,7 +2455,7 @@
     "state": "CA",
     "zip": "92082",
     "phone": "(760) 975-9662",
-    "website": "",
+    "website": "https://www.facebook.com/p/Harvest-Farms-Market-Liquor-100082865965731/",
     "type": "Off-Premise",
     "lat": 33.23654,
     "lng": -117.053,
@@ -9515,23 +9515,6 @@
     ]
   },
   {
-    "name": "Liquor Outlet The #4",
-    "address": "789 North Nellis Boulevard",
-    "city": "Las Vegas",
-    "state": "NV",
-    "zip": "89110",
-    "phone": "(702) 459-0044",
-    "website": "",
-    "type": "Off-Premise",
-    "lat": 36.17702,
-    "lng": -115.063,
-    "products": [
-      "Moonlight Mayhem!",
-      "Moonlight Mayhem! Extended Cut",
-      "Ryes of the Robots"
-    ]
-  },
-  {
     "name": "Crystal Liquors",
     "address": "3655 South Durango Drive",
     "city": "Las Vegas",
@@ -9570,7 +9553,7 @@
     "state": "NV",
     "zip": "89048",
     "phone": "(775) 727-5353",
-    "website": "",
+    "website": "https://www.facebook.com/liquor1190/",
     "type": "Off-Premise",
     "lat": 36.18409,
     "lng": -115.955,
@@ -10648,7 +10631,7 @@
   {
     "name": "M & R LIQUORS VIII",
     "address": "13133 Louetta Road",
-    "city": "Houston",
+    "city": "Cypress",
     "state": "TX",
     "zip": "77429",
     "phone": "(281) 655-1200",
