@@ -22,6 +22,7 @@ function onOpen() {
     .addItem('Find Missing Phone Numbers', 'findMissingPhoneNumbers')
     .addItem('Find Missing Websites', 'findMissingWebsites')
     .addItem('Add Crimson Cask (CC)', 'markCrimsonCask')
+    .addItem('Apply KY Update (May 2026)', 'applyKentuckyUpdate')
     // .addItem('Fix Corporate Addresses', 'fixCorporateAddresses')
     .addToUi();
 }
@@ -809,6 +810,145 @@ function markCrimsonCask() {
   if (notFound.length === 0) {
     msg += 'All targets matched. Run "Update Website" to push to the site.';
   }
+
+  SpreadsheetApp.getUi().alert(msg);
+}
+
+/**
+ * One-time: applies the May 2026 Kentucky rolling-report update.
+ *  - Adds SKUs to existing stores (matched by exact address + zip; only sets
+ *    TRUE, never clears).
+ *  - Appends new stores with blank lat/lng so "Update Website" geocodes them.
+ * Re-runnable: existing-store SKUs are idempotent, and new stores are skipped
+ * if an identical address already exists.
+ *
+ * After running this, run "Update Website" to normalize, geocode, and push.
+ */
+function applyKentuckyUpdate() {
+  // Existing rows: match by the sheet's own address + zip, then add these SKUs.
+  const SKU_UPDATES = [
+    { address: '4131 Towne Center Drive', zip: '40241', add: ['MMEC'] },        // Liquor Barn #980
+    { address: '107 East Flaget Street',  zip: '40004', add: ['CC'] },          // The Volstead
+    { address: '127 North 3rd Street',    zip: '40004', add: ['MM'] },          // Cox's Evergreen #41
+    { address: '720 East Market Street',  zip: '40202', add: ['MM', 'QUAD'] },  // Evergreen Liquors NULU
+  ];
+
+  // New stores. zip left blank on purpose — "Update Website" geocodes/normalizes
+  // and fills city/state/zip + lat/lng. products = abbreviations to set TRUE.
+  const NEW_STORES = [
+    { store_name: 'The Barrel Market',           address: '110 Summit at Fritz Farm', city: 'Lexington',    state: 'KY', type: 'Off-Premise', products: ['CC'] },
+    { store_name: 'Taste Fine Wine & Spirits',   address: '634 East Market Street',   city: 'Louisville',   state: 'KY', type: 'Off-Premise', products: ['CC'] },
+    { store_name: 'Oak & Grape',                 address: '118 North 3rd Street',     city: 'Bardstown',    state: 'KY', type: 'On-Premise',  products: ['CC'] },
+    { store_name: 'Liquor Junction',             address: '11304 Maple Brook Drive',  city: 'Louisville',   state: 'KY', type: 'Off-Premise', products: ['MM', 'MMEC'] },
+    { store_name: 'Liquor Palate #2',            address: '3707 Chamberlain Lane',    city: 'Louisville',   state: 'KY', type: 'Off-Premise', products: ['MMEC', 'MMWP', 'QUAD'] },
+    { store_name: 'Great Spirits 23',            address: '608 Richmond Road North',  city: 'Berea',        state: 'KY', type: 'Off-Premise', products: ['RREC'] },
+    { store_name: 'Bourbon CO Whiskey House',    address: '616 Main Street',          city: 'Paris',        state: 'KY', type: 'On-Premise',  products: ['MM', 'MMEC', 'RR', 'RREC'] },
+    { store_name: 'Noble Funk Brewing Co',       address: '922 South 2nd Street',     city: 'Louisville',   state: 'KY', type: 'On-Premise',  products: ['MMEC', 'MMWP', 'QUAD', 'RREC'] },
+    { store_name: 'Bourbon on Rye',              address: '115 West Main Street',     city: 'Lexington',    state: 'KY', type: 'On-Premise',  products: ['MMWP'] },
+  ];
+
+  const PRODUCT_COLS = ['MM', 'MMEC', 'RR', 'RREC', 'QUAD', 'MMWP', 'CC'];
+
+  const norm = (s) => String(s || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  const sheet = SpreadsheetApp.getActiveSheet();
+  const values = sheet.getDataRange().getValues();
+  const headers = values[0];
+
+  const col = {};
+  ['store_name', 'address', 'city', 'state', 'zip', 'phone', 'website', 'type', 'lat', 'lng', 'normalized']
+    .concat(PRODUCT_COLS)
+    .forEach(h => { col[h] = headers.indexOf(h); });
+
+  if (col.address === -1 || col.zip === -1 || col.store_name === -1) {
+    SpreadsheetApp.getUi().alert('Error: required columns (store_name, address, zip) not found.');
+    return;
+  }
+  // Every product column must exist (CC was added by markCrimsonCask).
+  for (const p of PRODUCT_COLS) {
+    if (col[p] === -1) {
+      SpreadsheetApp.getUi().alert('Error: product column "' + p + '" not found. Run "Add Crimson Cask (CC)" first if CC is missing.');
+      return;
+    }
+  }
+
+  const report = [];
+
+  // --- 1. SKU updates on existing rows ---
+  const skuFound = [];
+  const skuMissing = [];
+  for (const upd of SKU_UPDATES) {
+    let matchedRow = -1;
+    for (let i = 1; i < values.length; i++) {
+      if (norm(values[i][col.address]) === norm(upd.address) &&
+          String(values[i][col.zip]).trim() === upd.zip) {
+        matchedRow = i + 1;
+        break;
+      }
+    }
+    if (matchedRow === -1) {
+      skuMissing.push(`${upd.address} (${upd.zip}) — add [${upd.add.join(',')}]`);
+      continue;
+    }
+    upd.add.forEach(p => sheet.getRange(matchedRow, col[p] + 1).setValue(true));
+    skuFound.push(`Row ${matchedRow}: ${values[matchedRow - 1][col.store_name]} += [${upd.add.join(',')}]`);
+  }
+
+  // --- 2. Append new stores (skip if address already present) ---
+  const added = [];
+  const skipped = [];
+  for (const ns of NEW_STORES) {
+    let exists = false;
+    for (let i = 1; i < values.length; i++) {
+      if (norm(values[i][col.address]) === norm(ns.address)) { exists = true; break; }
+    }
+    if (exists) {
+      skipped.push(`${ns.store_name} — ${ns.address} (address already on sheet)`);
+      continue;
+    }
+
+    const row = new Array(headers.length).fill('');
+    row[col.store_name] = ns.store_name;
+    row[col.address] = ns.address;
+    row[col.city] = ns.city;
+    row[col.state] = ns.state;
+    row[col.type] = ns.type;
+    // products: TRUE for carried, FALSE otherwise
+    PRODUCT_COLS.forEach(p => { row[col[p]] = ns.products.indexOf(p) !== -1; });
+    // lat/lng/zip/normalized left blank so Update Website geocodes + normalizes.
+
+    sheet.appendRow(row);
+    added.push(`${ns.store_name} — ${ns.address}, ${ns.city} [${ns.products.join(',')}]`);
+  }
+
+  // Render product columns as checkboxes for the newly appended rows.
+  if (added.length > 0) {
+    const lastRow = sheet.getLastRow();
+    const firstNew = lastRow - added.length + 1;
+    const minProdCol = Math.min.apply(null, PRODUCT_COLS.map(p => col[p]));
+    const maxProdCol = Math.max.apply(null, PRODUCT_COLS.map(p => col[p]));
+    sheet.getRange(firstNew, minProdCol + 1, added.length, maxProdCol - minProdCol + 1).insertCheckboxes();
+  }
+
+  // --- report ---
+  let msg = 'Apply KY Update Complete\n\n';
+  msg += `SKUs added to existing stores: ${skuFound.length}\n`;
+  skuFound.forEach(s => { msg += '  ' + s + '\n'; });
+  if (skuMissing.length > 0) {
+    msg += `\nSKU targets NOT FOUND (${skuMissing.length}):\n`;
+    skuMissing.forEach(s => { msg += '  ' + s + '\n'; });
+  }
+  msg += `\nNew stores added: ${added.length}\n`;
+  added.forEach(s => { msg += '  ' + s + '\n'; });
+  if (skipped.length > 0) {
+    msg += `\nNew stores SKIPPED (already on sheet): ${skipped.length}\n`;
+    skipped.forEach(s => { msg += '  ' + s + '\n'; });
+  }
+  msg += '\nRun "Update Website" next to geocode the new stores and push to the site.';
 
   SpreadsheetApp.getUi().alert(msg);
 }
