@@ -727,9 +727,20 @@ function markCrimsonCask() {
   // (keeps it next to the other product columns); otherwise append.
   let ccCol = headers.indexOf('CC');
   if (ccCol === -1) {
-    ccCol = headers.indexOf('');
-    if (ccCol === -1) ccCol = headers.length;
+    // Append a fresh column at the end. Do NOT reuse a blank-header column —
+    // this sheet has a stray blank column already full of TRUE values, and
+    // reusing it would mark every store as carrying CC.
+    ccCol = headers.length;
     sheet.getRange(1, ccCol + 1).setValue('CC');
+  }
+
+  // Make the CC column checkboxes and reset EVERY row to unchecked (FALSE)
+  // first, so only the matched rows below end up TRUE. Safe to re-run.
+  const numDataRows = values.length - 1;
+  if (numDataRows > 0) {
+    const ccRange = sheet.getRange(2, ccCol + 1, numDataRows, 1);
+    ccRange.insertCheckboxes();
+    ccRange.uncheck();
   }
 
   // Build a lookup of normalized "address|zip" -> [row indices]
