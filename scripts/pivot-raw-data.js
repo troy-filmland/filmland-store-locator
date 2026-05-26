@@ -19,6 +19,7 @@ const PRODUCT_MAP = {
   RREC: 'Ryes of the Robot Extended Cut',
   QUAD: 'Quadraforce Blended Bourbon',
   MMWP: 'Moonlight Mayhem! 2 the White Port Wolf',
+  CC:   'The Crimson Cask',
 };
 
 const PRODUCT_ABBREVS = Object.keys(PRODUCT_MAP);

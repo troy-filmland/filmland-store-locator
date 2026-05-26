@@ -49,6 +49,7 @@ When you change app.js or styles.css, you MUST:
 | RREC | Ryes of the Robot Extended Cut |
 | QUAD | Quadraforce Blended Bourbon |
 | MMWP | Moonlight Mayhem! 2 the White Port Wolf |
+| CC | The Crimson Cask |
 
 "Mayhem" ALWAYS has an exclamation mark. "Town at the End of Tomorrow" is excluded (sold out).
 

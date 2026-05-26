@@ -21,6 +21,7 @@ function onOpen() {
     .addItem('Update Website', 'updateWebsite')
     .addItem('Find Missing Phone Numbers', 'findMissingPhoneNumbers')
     .addItem('Find Missing Websites', 'findMissingWebsites')
+    .addItem('Add Crimson Cask (CC)', 'markCrimsonCask')
     // .addItem('Fix Corporate Addresses', 'fixCorporateAddresses')
     .addToUi();
 }
@@ -670,6 +671,132 @@ function fixCorporateAddresses() {
   }
   if (skipCount > 0) {
     msg += `\nCheck the logs for stores that couldn't be resolved — you may need to look those up manually.`;
+  }
+
+  SpreadsheetApp.getUi().alert(msg);
+}
+
+/**
+ * One-time: adds a "CC" (The Crimson Cask) product column if missing,
+ * then sets CC = TRUE on the stores that carry it, matched by street
+ * address + zip. Any target that can't be found is reported so a bad
+ * address can be fixed. Re-runnable: it only sets TRUE, never clears.
+ *
+ * After running this, run "Update Website" to push to the site.
+ */
+function markCrimsonCask() {
+  // Targets: street address + zip. Matched against the sheet, NOT inserted.
+  // Labels are just for the report.
+  const CC_STORES = [
+    { label: 'Liquor Barn Springhurst #980',        address: '4131 Towne Center Drive',        zip: '40241' },
+    { label: 'Liquor Barn Richmond Road #904',       address: '3040 Richmond Road',             zip: '40509' },
+    { label: 'Liquor Barn Middletown Commons #962',  address: '13401 Shelbyville Road',         zip: '40223' },
+    { label: 'Liquor Barn Jefferson Commons #961',   address: '4901 Outer Loop',                zip: '40219' },
+    { label: 'Liquor Barn Hurstbourne #960',         address: '1850 South Hurstbourne Parkway', zip: '40220' },
+    { label: 'Liquor Barn Hamburg #920',             address: '1837 Plaudit Place',             zip: '40509' },
+    { label: 'Liquor Barn Fern Valley #970',         address: '3420 Fern Valley Road',          zip: '40213' },
+    { label: 'Liquor Barn Elizabethtown #986',       address: '1705 North Dixie Highway',       zip: '42701' },
+    { label: 'Liquor Barn Beaumont #903',            address: '921 Beaumont Centre Parkway',    zip: '40513' },
+    { label: 'Party Mart Brownsboro Road #901',      address: '4808 Brownsboro Road',           zip: '40207' },
+    { label: 'Liquor Barn Fort Thomas #908',         address: '424 Alexandria Pike',            zip: '41075' },
+  ];
+
+  // Normalize an address for comparison: lowercase, strip punctuation,
+  // collapse whitespace. "4131 Towne Center Dr." == "4131 Towne Center Dr"
+  const norm = (s) => String(s || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  const sheet = SpreadsheetApp.getActiveSheet();
+  const dataRange = sheet.getDataRange();
+  const values = dataRange.getValues();
+  const headers = values[0];
+
+  const addressCol = headers.indexOf('address');
+  const zipCol = headers.indexOf('zip');
+  const nameCol = headers.indexOf('store_name');
+
+  if (addressCol === -1 || zipCol === -1) {
+    SpreadsheetApp.getUi().alert('Error: Required columns not found (address, zip).');
+    return;
+  }
+
+  // Find or create the CC column. Reuse a blank header column if one exists
+  // (keeps it next to the other product columns); otherwise append.
+  let ccCol = headers.indexOf('CC');
+  if (ccCol === -1) {
+    ccCol = headers.indexOf('');
+    if (ccCol === -1) ccCol = headers.length;
+    sheet.getRange(1, ccCol + 1).setValue('CC');
+  }
+
+  // Build a lookup of normalized "address|zip" -> [row indices]
+  const matchedRows = {};      // target index -> array of {row, name}
+  CC_STORES.forEach((_, idx) => { matchedRows[idx] = []; });
+
+  for (let i = 1; i < values.length; i++) {
+    const rowAddr = norm(values[i][addressCol]);
+    const rowZip = String(values[i][zipCol] || '').trim();
+    if (!rowAddr) continue;
+
+    for (let t = 0; t < CC_STORES.length; t++) {
+      const target = CC_STORES[t];
+      if (rowAddr === norm(target.address) && rowZip === target.zip) {
+        matchedRows[t].push({ row: i + 1, name: String(values[i][nameCol] || '') });
+      }
+    }
+  }
+
+  // Set CC = TRUE on every matched row
+  let setCount = 0;
+  const found = [];
+  const notFound = [];
+  const dupes = [];
+
+  for (let t = 0; t < CC_STORES.length; t++) {
+    const hits = matchedRows[t];
+    if (hits.length === 0) {
+      notFound.push(CC_STORES[t]);
+      continue;
+    }
+    if (hits.length > 1) {
+      dupes.push({ target: CC_STORES[t], hits });
+    }
+    hits.forEach(hit => {
+      sheet.getRange(hit.row, ccCol + 1).setValue(true);
+      setCount++;
+      found.push(`Row ${hit.row}: ${hit.name} (${CC_STORES[t].label})`);
+    });
+  }
+
+  let msg = 'Add Crimson Cask (CC) Complete\n\n';
+  msg += `CC set TRUE on: ${setCount} row(s)\n`;
+  msg += `Targets matched: ${CC_STORES.length - notFound.length} of ${CC_STORES.length}\n\n`;
+
+  if (found.length > 0) {
+    msg += 'Matched stores:\n';
+    found.forEach(f => { msg += '  ' + f + '\n'; });
+    msg += '\n';
+  }
+
+  if (notFound.length > 0) {
+    msg += `NOT FOUND (${notFound.length}) — fix the address/zip below, then re-run:\n`;
+    notFound.forEach(n => { msg += `  ${n.label} — ${n.address}, ${n.zip}\n`; });
+    msg += '\n';
+  }
+
+  if (dupes.length > 0) {
+    msg += `Matched MULTIPLE rows (verify these are correct):\n`;
+    dupes.forEach(d => {
+      msg += `  ${d.target.label}: ${d.hits.map(h => 'row ' + h.row).join(', ')}\n`;
+    });
+    msg += '\n';
+  }
+
+  if (notFound.length === 0) {
+    msg += 'All targets matched. Run "Update Website" to push to the site.';
   }
 
   SpreadsheetApp.getUi().alert(msg);
