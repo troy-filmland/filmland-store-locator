@@ -6328,6 +6328,7 @@
     "lng": -85.5576,
     "products": [
       "Moonlight Mayhem!",
+      "Moonlight Mayhem! Extended Cut",
       "Ryes of the Robots",
       "Quadraforce Blended Bourbon",
       "The Crimson Cask"
@@ -6363,6 +6364,7 @@
     "lat": 37.81018,
     "lng": -85.466,
     "products": [
+      "Moonlight Mayhem!",
       "Moonlight Mayhem! Extended Cut",
       "Ryes of the Robots"
     ]
@@ -6541,7 +6543,9 @@
     "lat": 38.2532,
     "lng": -85.7392,
     "products": [
-      "Moonlight Mayhem! Extended Cut"
+      "Moonlight Mayhem!",
+      "Moonlight Mayhem! Extended Cut",
+      "Quadraforce Blended Bourbon"
     ]
   },
   {
@@ -6740,7 +6744,8 @@
     "lat": 37.81023,
     "lng": -85.4657,
     "products": [
-      "Ryes of the Robots"
+      "Ryes of the Robots",
+      "The Crimson Cask"
     ]
   },
   {
@@ -11252,6 +11257,165 @@
       "Ryes of the Robots",
       "Ryes of the Robot Extended Cut",
       "Quadraforce Blended Bourbon"
+    ]
+  },
+  {
+    "name": "The Wine Hut",
+    "address": "10013 197 6th Ave",
+    "city": "New York",
+    "state": "NY",
+    "zip": "10014",
+    "phone": "(212) 229-2409",
+    "website": "https://www.thewinehutnyc.com/",
+    "type": "Off-Premise",
+    "lat": 40.726829,
+    "lng": -74.003723,
+    "products": []
+  },
+  {
+    "name": "Urban Wines and Spirits",
+    "address": "45 1st Ave space 1-D",
+    "city": "New York",
+    "state": "NY",
+    "zip": "10003",
+    "phone": "(212) 477-1003",
+    "website": "https://urbanwinesnyc.com/",
+    "type": "Off-Premise",
+    "lat": 40.7244861,
+    "lng": -73.9879202,
+    "products": [
+      "Moonlight Mayhem!",
+      "Ryes of the Robot Extended Cut",
+      "Moonlight Mayhem! 2 the White Port Wolf"
+    ]
+  },
+  {
+    "name": "The Barrel Market",
+    "address": "110 Summit At Fritz Farm",
+    "city": "Lexington",
+    "state": "KY",
+    "zip": "40517",
+    "phone": "",
+    "website": "",
+    "type": "Off-Premise",
+    "lat": 37.9774582,
+    "lng": -84.5267719,
+    "products": [
+      "The Crimson Cask"
+    ]
+  },
+  {
+    "name": "Taste Fine Wine & Spirits",
+    "address": "634 East Market Street",
+    "city": "Louisville",
+    "state": "KY",
+    "zip": "40202",
+    "phone": "",
+    "website": "",
+    "type": "Off-Premise",
+    "lat": 38.2532327,
+    "lng": -85.7405354,
+    "products": [
+      "The Crimson Cask"
+    ]
+  },
+  {
+    "name": "Oak & Grape",
+    "address": "118 North 3rd Street",
+    "city": "Bardstown",
+    "state": "KY",
+    "zip": "40004",
+    "phone": "",
+    "website": "",
+    "type": "On-Premise",
+    "lat": 37.8101262,
+    "lng": -85.4668134,
+    "products": [
+      "The Crimson Cask"
+    ]
+  },
+  {
+    "name": "Liquor Junction",
+    "address": "11304 Maple Brook Drive",
+    "city": "Louisville",
+    "state": "KY",
+    "zip": "40241",
+    "phone": "",
+    "website": "",
+    "type": "Off-Premise",
+    "lat": 38.3018839,
+    "lng": -85.5463002,
+    "products": [
+      "Moonlight Mayhem!",
+      "Moonlight Mayhem! Extended Cut"
+    ]
+  },
+  {
+    "name": "Liquor Palate #2",
+    "address": "3707 Chamberlain Lane",
+    "city": "Louisville",
+    "state": "KY",
+    "zip": "40241",
+    "phone": "",
+    "website": "",
+    "type": "Off-Premise",
+    "lat": 38.3015688,
+    "lng": -85.5455641,
+    "products": [
+      "Moonlight Mayhem! Extended Cut",
+      "Quadraforce Blended Bourbon",
+      "Moonlight Mayhem! 2 the White Port Wolf"
+    ]
+  },
+  {
+    "name": "Great Spirits 23",
+    "address": "608 Richmond Road North",
+    "city": "Berea",
+    "state": "KY",
+    "zip": "40403",
+    "phone": "",
+    "website": "",
+    "type": "Off-Premise",
+    "lat": 37.5941589,
+    "lng": -84.2829578,
+    "products": [
+      "Ryes of the Robot Extended Cut"
+    ]
+  },
+  {
+    "name": "Bourbon CO Whiskey House",
+    "address": "616 Main Street",
+    "city": "Paris",
+    "state": "KY",
+    "zip": "40361",
+    "phone": "",
+    "website": "",
+    "type": "On-Premise",
+    "lat": 38.2104312,
+    "lng": -84.2512395,
+    "products": [
+      "Moonlight Mayhem!",
+      "Moonlight Mayhem! Extended Cut",
+      "Ryes of the Robots",
+      "Ryes of the Robot Extended Cut"
+    ]
+  },
+  {
+    "name": "Noble Funk Brewing Co",
+    "address": "922 South 2nd Street",
+    "city": "Louisville",
+    "state": "KY",
+    "zip": "40203",
+    "phone": "",
+    "website": "",
+    "type": "On-Premise",
+    "lat": 38.240452,
+    "lng": -85.756447,
+    "products": [
+      "Moonlight Mayhem! Extended Cut",
+      "Ryes of the Robot Extended Cut",
+      "Quadraforce Blended Bourbon",
+      "Moonlight Mayhem! 2 the White Port Wolf"
     ]
   }
 ]
