@@ -898,16 +898,24 @@ function applyKentuckyUpdate() {
     skuFound.push(`Row ${matchedRow}: ${values[matchedRow - 1][col.store_name]} += [${upd.add.join(',')}]`);
   }
 
-  // --- 2. Append new stores (skip if address already present) ---
+  // --- 2. New stores. Match by address + STATE (address strings repeat across
+  // states, so address-only matching is unsafe). If the store already exists,
+  // just add its SKUs; otherwise append a new row. ---
   const added = [];
-  const skipped = [];
+  const matchedExisting = [];
   for (const ns of NEW_STORES) {
-    let exists = false;
+    let matchedRow = -1;
     for (let i = 1; i < values.length; i++) {
-      if (norm(values[i][col.address]) === norm(ns.address)) { exists = true; break; }
+      if (norm(values[i][col.address]) === norm(ns.address) &&
+          String(values[i][col.state]).trim().toUpperCase() === ns.state.toUpperCase()) {
+        matchedRow = i + 1;
+        break;
+      }
     }
-    if (exists) {
-      skipped.push(`${ns.store_name} — ${ns.address} (address already on sheet)`);
+
+    if (matchedRow !== -1) {
+      ns.products.forEach(p => sheet.getRange(matchedRow, col[p] + 1).setValue(true));
+      matchedExisting.push(`Row ${matchedRow}: ${values[matchedRow - 1][col.store_name]} (already on sheet at ${ns.address}) += [${ns.products.join(',')}]`);
       continue;
     }
 
@@ -944,9 +952,9 @@ function applyKentuckyUpdate() {
   }
   msg += `\nNew stores added: ${added.length}\n`;
   added.forEach(s => { msg += '  ' + s + '\n'; });
-  if (skipped.length > 0) {
-    msg += `\nNew stores SKIPPED (already on sheet): ${skipped.length}\n`;
-    skipped.forEach(s => { msg += '  ' + s + '\n'; });
+  if (matchedExisting.length > 0) {
+    msg += `\nAlready on sheet — SKUs added instead (${matchedExisting.length}):\n`;
+    matchedExisting.forEach(s => { msg += '  ' + s + '\n'; });
   }
   msg += '\nRun "Update Website" next to geocode the new stores and push to the site.';
 
