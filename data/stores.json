@@ -6330,8 +6330,7 @@
       "Moonlight Mayhem!",
       "Moonlight Mayhem! Extended Cut",
       "Ryes of the Robots",
-      "Quadraforce Blended Bourbon",
-      "The Crimson Cask"
+      "Quadraforce Blended Bourbon"
     ]
   },
   {
@@ -6397,8 +6396,7 @@
     "lng": -85.5845,
     "products": [
       "Ryes of the Robots",
-      "Quadraforce Blended Bourbon",
-      "The Crimson Cask"
+      "Quadraforce Blended Bourbon"
     ]
   },
   {
@@ -6415,8 +6413,7 @@
     "products": [
       "Moonlight Mayhem!",
       "Ryes of the Robots",
-      "Quadraforce Blended Bourbon",
-      "The Crimson Cask"
+      "Quadraforce Blended Bourbon"
     ]
   },
   {
@@ -6432,8 +6429,7 @@
     "lng": -85.8844,
     "products": [
       "Moonlight Mayhem! Extended Cut",
-      "Quadraforce Blended Bourbon",
-      "The Crimson Cask"
+      "Quadraforce Blended Bourbon"
     ]
   },
   {
@@ -6465,8 +6461,7 @@
     "lng": -84.4878,
     "products": [
       "Moonlight Mayhem! Extended Cut",
-      "Moonlight Mayhem! 2 the White Port Wolf",
-      "The Crimson Cask"
+      "Moonlight Mayhem! 2 the White Port Wolf"
     ]
   },
   {
@@ -6482,8 +6477,7 @@
     "lng": -84.556,
     "products": [
       "Ryes of the Robot Extended Cut",
-      "Quadraforce Blended Bourbon",
-      "The Crimson Cask"
+      "Quadraforce Blended Bourbon"
     ]
   },
   {
@@ -6560,8 +6554,7 @@
     "lat": 38.15615,
     "lng": -85.6982,
     "products": [
-      "Moonlight Mayhem! Extended Cut",
-      "The Crimson Cask"
+      "Moonlight Mayhem! Extended Cut"
     ]
   },
   {
@@ -6621,8 +6614,7 @@
     "lat": 38.27829,
     "lng": -85.6373,
     "products": [
-      "Ryes of the Robots",
-      "The Crimson Cask"
+      "Ryes of the Robots"
     ]
   },
   {
@@ -6667,8 +6659,7 @@
     "lat": 38.24475,
     "lng": -85.5057,
     "products": [
-      "Moonlight Mayhem! Extended Cut",
-      "The Crimson Cask"
+      "Moonlight Mayhem! Extended Cut"
     ]
   },
   {
@@ -6744,8 +6735,7 @@
     "lat": 37.81023,
     "lng": -85.4657,
     "products": [
-      "Ryes of the Robots",
-      "The Crimson Cask"
+      "Ryes of the Robots"
     ]
   },
   {
@@ -7085,8 +7075,7 @@
       "Moonlight Mayhem!",
       "Ryes of the Robot Extended Cut",
       "Quadraforce Blended Bourbon",
-      "Moonlight Mayhem! 2 the White Port Wolf",
-      "The Crimson Cask"
+      "Moonlight Mayhem! 2 the White Port Wolf"
     ]
   },
   {
@@ -7278,8 +7267,7 @@
       "Ryes of the Robots",
       "Ryes of the Robot Extended Cut",
       "Quadraforce Blended Bourbon",
-      "Moonlight Mayhem! 2 the White Port Wolf",
-      "The Crimson Cask"
+      "Moonlight Mayhem! 2 the White Port Wolf"
     ]
   },
   {
@@ -7598,8 +7586,7 @@
       "Ryes of the Robots",
       "Ryes of the Robot Extended Cut",
       "Quadraforce Blended Bourbon",
-      "Moonlight Mayhem! 2 the White Port Wolf",
-      "The Crimson Cask"
+      "Moonlight Mayhem! 2 the White Port Wolf"
     ]
   },
   {
@@ -11300,9 +11287,7 @@
     "type": "Off-Premise",
     "lat": 37.9774582,
     "lng": -84.5267719,
-    "products": [
-      "The Crimson Cask"
-    ]
+    "products": []
   },
   {
     "name": "Taste Fine Wine & Spirits",
@@ -11315,9 +11300,7 @@
     "type": "Off-Premise",
     "lat": 38.2532327,
     "lng": -85.7405354,
-    "products": [
-      "The Crimson Cask"
-    ]
+    "products": []
   },
   {
     "name": "Oak & Grape",
@@ -11330,9 +11313,7 @@
     "type": "On-Premise",
     "lat": 37.8101262,
     "lng": -85.4668134,
-    "products": [
-      "The Crimson Cask"
-    ]
+    "products": []
   },
   {
     "name": "Liquor Junction",
